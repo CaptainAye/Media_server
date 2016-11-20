@@ -46,7 +46,7 @@ public class SignalReceiver{
                     Signalizable signal = (Signalizable) receiverStream.readObject();
                     QueuePacket message = new QueuePacket(socket, signal);
                     //message.set(socket, signal);
-                    SignalQueue.getSignalQueue().enqueue(message);
+                    SignalQueue.getSignalQueue().enqueue(message);      
                 }
             } catch (IOException e)
             {
