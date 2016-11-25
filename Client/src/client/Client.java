@@ -5,9 +5,13 @@
  */
 package client;
 
+import java.util.Scanner;
 import org.mediaserver.communication.BroadcastReceiver;
+import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.communication.ServerReceiver;
 import org.mediaserver.communication.SignalParser;
+import org.mediaserver.communication.SignalReceiver;
+import org.mediaserver.signals.BroadcastSignal;
 
 /**
  *
@@ -25,6 +29,10 @@ public class Client {
         parserThread.start();
         Thread serverReceiverThread = new Thread(receiver);
         serverReceiverThread.start();
+<<<<<<< HEAD
+=======
+        // TODO code application logic here   
+>>>>>>> 34108e5797c6cfa73ea1866c9d6ebded31814075
     }
     
 }
