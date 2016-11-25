@@ -5,6 +5,9 @@
  */
 package org.mediaserver.commands;
 
+import client.FileSearcher;
+import java.nio.file.Path;
+import java.util.HashMap;
 import org.mediaserver.communication.QueuePacket;
 import org.mediaserver.interfaces.Command;
 
@@ -13,8 +16,14 @@ import org.mediaserver.interfaces.Command;
  * @author Tomek
  */
 public class BroadcastSignalCommand implements Command{
-    public void execute(QueuePacket data){
-        System.out.println("Server :" + data.getSignal().getId());
+    private Boolean searched = false;
+    private HashMap<String,Path> filesMap = new HashMap<String,Path>();
+    public synchronized void execute(QueuePacket data){
+        System.out.println("Listen to Host: " + data.getSignal().getLocalIp()+ " on port: " + data.getSignal().getSourcePort());
+        if (searched == false){
+            filesMap = FileSearcher.searchDirectories();
+            searched = true;
+        }
     }
     
 }

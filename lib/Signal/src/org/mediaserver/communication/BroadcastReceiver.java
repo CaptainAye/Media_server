@@ -31,12 +31,12 @@ public class BroadcastReceiver implements Runnable {
         byte[] receiveData = new byte[1024];
         while(true){
             System.out.println("Listening for packets");
-         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-         socket.receive(receivePacket);
-         ByteArrayInputStream baos = new ByteArrayInputStream(receiveData);
-         ObjectInputStream oos = new ObjectInputStream(baos);
-         signal =(Signalizable) oos.readObject();
-         SignalQueue.getSignalQueue().enqueue(new QueuePacket(null,signal));
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            socket.receive(receivePacket);
+            ByteArrayInputStream baos = new ByteArrayInputStream(receiveData);
+            ObjectInputStream oos = new ObjectInputStream(baos);
+            signal =(Signalizable) oos.readObject();
+            SignalQueue.getSignalQueue().enqueue(new QueuePacket(null,signal));
         }
         } catch (SocketException e){
             e.printStackTrace();

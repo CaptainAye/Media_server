@@ -19,14 +19,12 @@ public class Client {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
         BroadcastReceiver receiver = new BroadcastReceiver(10502); // port = 10500
         SignalParser parser = SignalParser.getParser();
         Thread parserThread = new Thread(parser);
         parserThread.start();
         Thread serverReceiverThread = new Thread(receiver);
         serverReceiverThread.start();
-        // TODO code application logic here
     }
     
 }

@@ -24,7 +24,7 @@ import org.mediaserver.tools.Validator;
  * @author Tomek
  */
 public class Server {
-    private ArrayList<BroadcastSignal> broadcastList;
+    private ArrayList<BroadcastSignal> broadcastList = new ArrayList<>();
     private Integer serverNo = 1;
     //private SignalBroadcasterBack sigBroad;
     private SignalBroadcaster sigBroad;
@@ -119,7 +119,7 @@ public class Server {
     }
 
     public Server(){
-        broadcastList = new ArrayList<>();
+        //broadcastList = new ArrayList<>();
         try {
             readConfigFile();
             //sender = new SignalSenderback();
