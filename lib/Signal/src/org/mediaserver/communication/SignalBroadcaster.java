@@ -20,12 +20,12 @@ import org.mediaserver.sockets.BroadcastSocket;
 public class SignalBroadcaster extends SignalSender implements Runnable {
     private ArrayList<BroadcastSignal> broadcastList;
     
-    public SignalBroadcaster(ArrayList<BroadcastSignal> list) throws BroadcastSignalNotPresentException{
+    public SignalBroadcaster(ArrayList<BroadcastSignal> list, Integer port) throws BroadcastSignalNotPresentException{
         if (list.size() == 0 || list == null) {
             throw new BroadcastSignalNotPresentException();
         }
         broadcastList = new ArrayList<>(list);
-        setPort(broadcastList.get(0).getSourcePort());
+        setPort(port);
         socket = new BroadcastSocket(socketPort);
     }
     public void run(){
@@ -35,9 +35,11 @@ public class SignalBroadcaster extends SignalSender implements Runnable {
             Iterator<BroadcastSignal> iter = broadcastList.iterator();
             while(iter.hasNext()){
                 try {
+                    BroadcastSignal sig = iter.next();
                     System.out.println("Iteration: " + i + " packet sent");
+                    System.out.println("Packet sent on broadcast IP: " + sig.getIp() + " from server ip: " + sig.getLocalIp() + " on port: " + sig.getDestinationPort());
                     i++;
-                    send(iter.next());
+                    send(sig);
                 } catch (WrongSocketPortException e){
                     e.printStackTrace();
                     //TODO write default unknown host exception handling

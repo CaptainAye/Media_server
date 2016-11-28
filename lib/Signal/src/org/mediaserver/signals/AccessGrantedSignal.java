@@ -4,16 +4,11 @@
  * and open the template in the editor.
  */
 package org.mediaserver.signals;
-
 import org.mediaserver.interfaces.Signalizable;
-
 /**
  *
- * @author Natalka
+ * @author Tomek
  */
-public class AccessRequest extends Signalizable{
-    public AccessRequest (Integer id)
-    {
-        setId(id);
-    }
+public class AccessGrantedSignal extends Signalizable{
+    
 }

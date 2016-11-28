@@ -32,6 +32,13 @@ public class BroadcastSocket implements Socketable{
             //System.exit(-1);
         }
     }
+    
+    public BroadcastSocket(DatagramSocket socket){
+        if (socket == null){
+            throw new RuntimeException("Null socket passed");
+        }
+        this.socket = socket;
+    }
     public synchronized void open(Integer port){
         try
         {

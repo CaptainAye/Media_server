@@ -29,10 +29,7 @@ public class Client {
         parserThread.start();
         Thread serverReceiverThread = new Thread(receiver);
         serverReceiverThread.start();
-<<<<<<< HEAD
-=======
-        // TODO code application logic here   
->>>>>>> 34108e5797c6cfa73ea1866c9d6ebded31814075
+
     }
     
 }

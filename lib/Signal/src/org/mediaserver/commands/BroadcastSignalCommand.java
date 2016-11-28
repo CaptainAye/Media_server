@@ -15,10 +15,13 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.mediaserver.communication.DedicatedSender;
 
 import org.mediaserver.communication.QueuePacket;
 import org.mediaserver.communication.SignalReceiver;
 import org.mediaserver.interfaces.Command;
+import org.mediaserver.signals.AccessGrantedSignal;
+import org.mediaserver.signals.AccessRequest;
 import org.mediaserver.sockets.BroadcastSocket;
 
 /**
@@ -31,29 +34,23 @@ public class BroadcastSignalCommand implements Command{
     private HashMap<String,Path> filesMap = new HashMap<String,Path>();
     private Socket broadcastSocket;
     private ArrayList<String> servers;
+    private Boolean sent = false;
     public synchronized void execute(QueuePacket data){
+        try{
+            if (!sent){
+                String myIP = "192.168.0.18";
+                Socket socket = new Socket(myIP,10500);
+                DedicatedSender.getSender().send(socket, new AccessRequest(1)); //TODO Client ID - change it
+                sent = true;
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
         System.out.println("Listen to Host: " + data.getSignal().getLocalIp()+ " on port: " + data.getSignal().getSourcePort());
         if (searched == false){
             filesMap = FileSearcher.searchDirectories();
             searched = true;
         }
     }
-    /*
-    @Override
-    public void execute(QueuePacket data){
-        System.out.println("Server :" + data.getSignal().getId());
-        
-        //stworzyć socket z adresemIP serwera i nr portu, na którym ten nasłuchuje
-        String iP = data.getSignal().getLocalIp();
-        Integer port = data.getSignal().getSourcePort();
-        
-        try {
-            broadcastSocket = new Socket(iP, port);
-            SignalReceiver.getSignalReceiver().connectSocket(broadcastSocket);
-        } catch (IOException ex) {
-            Logger.getLogger(BroadcastSignalCommand.class.getName()).log(Level.SEVERE, null, ex);
-        }   
-
-    }*/
 }
 

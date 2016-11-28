@@ -8,9 +8,16 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import org.mediaserver.communication.ServerReceiver;
 import org.mediaserver.communication.SignalBroadcaster;
+import org.mediaserver.communication.SignalParser;
 import org.mediaserver.communication.SignalSenderback;
 import org.mediaserver.exceptions.BroadcastSignalNotPresentException;
 import org.mediaserver.exceptions.IncorrectCommandException;
@@ -25,9 +32,13 @@ import org.mediaserver.tools.Validator;
  */
 public class Server {
     private ArrayList<BroadcastSignal> broadcastList = new ArrayList<>();
-    private Integer serverNo = 1;
+    private static Integer serverNo = 1;
     //private SignalBroadcasterBack sigBroad;
     private SignalBroadcaster sigBroad;
+    private Integer port = 10500;
+    public static Integer getId(){
+        return serverNo;
+    }
     private Boolean readConfigFile() throws IncorrectCommandException, IncorrectIPFormatException
         {
         try {
@@ -117,15 +128,37 @@ public class Server {
         }
         return true;
     }
+    private void readNetworkInterfaces(){
+        Enumeration<NetworkInterface> nets = null;
+        try{
+            nets = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException e){
+            e.printStackTrace();
+            System.exit(-1);
+        }
+        for (NetworkInterface netint : Collections.list(nets)){
+            for(InterfaceAddress interfaceAddr : netint.getInterfaceAddresses()){
+                if (interfaceAddr.getBroadcast() != null && interfaceAddr.getAddress() != null){
+                    String broadcastAddress = interfaceAddr.getBroadcast().getHostAddress();
+                    String localAddress = interfaceAddr.getAddress().getHostAddress();
+                    broadcastList.add(new BroadcastSignal(broadcastAddress,localAddress,port,port+2,serverNo));
+                }
+            }
+            
+        }
+        
+    }
 
     public Server(){
-        //broadcastList = new ArrayList<>();
         try {
-            readConfigFile();
-            //sender = new SignalSenderback();
-            //sigBroad = new SignalBroadcasterBack(sender,broadcastList);
-            sigBroad = new SignalBroadcaster(broadcastList);
-            ServerReceiver receiver = new ServerReceiver(10500); // port = 10500
+            //readConfigFile();
+            readNetworkInterfaces();
+            sigBroad = new SignalBroadcaster(broadcastList,port);
+            ServerReceiver receiver = new ServerReceiver(port); // port = 10500
+            
+            SignalParser parser = SignalParser.getParser();
+            Thread parserThread = new Thread(parser);
+            parserThread.start();
             
             Thread signalBroadcasterThread = new Thread(sigBroad);
             Thread serverReceiverThread = new Thread(receiver);
@@ -137,14 +170,14 @@ public class Server {
             e.printStackTrace();
             System.exit(-1);
         }
-        catch(IncorrectCommandException e){
+        /*catch(IncorrectCommandException e){
             e.printStackTrace();
             System.exit(-1);
         }
         catch(IncorrectIPFormatException e){
             e.printStackTrace();
             System.exit(-1);
-        }
+        }*/
     } 
     public static void main(String[] args) {
         Server instance = new Server();
