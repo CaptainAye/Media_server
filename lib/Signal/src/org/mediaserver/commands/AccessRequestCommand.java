@@ -5,6 +5,10 @@
  */
 package org.mediaserver.commands;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.mediaserver.communication.QueuePacket;
 import org.mediaserver.interfaces.Command;
 
@@ -14,10 +18,20 @@ import org.mediaserver.interfaces.Command;
  */
 public class AccessRequestCommand implements Command {
     
-    //przesyłanie drzewa z kompa klienta
-    public void execute(QueuePacket data) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-        //To change body of generated methods, choose Tools | Templates.
+    private Integer uniqueID;
+    private PrintWriter save;
+    public void execute(QueuePacket data) { 
+        //generate client's uniqueID
+        try{
+            uniqueID=data.getSignal().getId();
+            save = new PrintWriter("clientID.txt");
+            save.println(uniqueID);
+            save.close();
+            //System.out.println("uniqueID " + uniqueID);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(AccessRequestCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
     
 }
