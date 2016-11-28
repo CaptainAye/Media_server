@@ -5,17 +5,17 @@
  */
 package org.mediaserver.commands;
 
-<<<<<<< HEAD
+
 import client.FileSearcher;
 import java.nio.file.Path;
 import java.util.HashMap;
-=======
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
->>>>>>> 34108e5797c6cfa73ea1866c9d6ebded31814075
+
 import org.mediaserver.communication.QueuePacket;
 import org.mediaserver.communication.SignalReceiver;
 import org.mediaserver.interfaces.Command;
@@ -26,19 +26,20 @@ import org.mediaserver.sockets.BroadcastSocket;
  * @author Tomek
  */
 public class BroadcastSignalCommand implements Command{
-<<<<<<< HEAD
+
     private Boolean searched = false;
     private HashMap<String,Path> filesMap = new HashMap<String,Path>();
+    private Socket broadcastSocket;
+    private ArrayList<String> servers;
     public synchronized void execute(QueuePacket data){
         System.out.println("Listen to Host: " + data.getSignal().getLocalIp()+ " on port: " + data.getSignal().getSourcePort());
         if (searched == false){
             filesMap = FileSearcher.searchDirectories();
             searched = true;
         }
-=======
-    private Socket broadcastSocket;
-    private ArrayList<String> servers;
-    
+    }
+    /*
+    @Override
     public void execute(QueuePacket data){
         System.out.println("Server :" + data.getSignal().getId());
         
@@ -52,6 +53,7 @@ public class BroadcastSignalCommand implements Command{
         } catch (IOException ex) {
             Logger.getLogger(BroadcastSignalCommand.class.getName()).log(Level.SEVERE, null, ex);
         }   
->>>>>>> 34108e5797c6cfa73ea1866c9d6ebded31814075
-    }
+
+    }*/
 }
+
