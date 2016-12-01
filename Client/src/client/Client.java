@@ -29,7 +29,7 @@ public class Client {
         parserThread.start();
         Thread serverReceiverThread = new Thread(receiver);
         serverReceiverThread.start();
-
+     
     }
     
 }
