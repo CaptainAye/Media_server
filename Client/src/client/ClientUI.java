@@ -5,9 +5,12 @@
  */
 package client;
 
+import java.awt.Component;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.util.Scanner;
+import javax.swing.JTextArea;
+import javax.swing.text.JTextComponent;
 import org.mediaserver.commands.BroadcastSignalCommand;
 import org.mediaserver.communication.BroadcastReceiver;
 import org.mediaserver.communication.DedicatedSender;
@@ -27,6 +30,11 @@ public class ClientUI extends javax.swing.JFrame {
      */
     public ClientUI() {
         initComponents();
+    }
+    
+    void setComboBox(String text){
+        JTextComponent napis1 = new JTextArea(text);
+        jComboBox1.add(napis1);
     }
 
     /**
@@ -119,7 +127,7 @@ public class ClientUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
+        // TODO ad
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     /**
@@ -165,7 +173,11 @@ public class ClientUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ClientUI().setVisible(true);
+                ClientUI client = new ClientUI();
+                client.setVisible(true);
+                client.setComboBox("Server 1 ip: 127.0.0.1");
+                
+                
             }
         });
        

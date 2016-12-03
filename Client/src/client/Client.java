@@ -22,7 +22,8 @@ public class Client {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    /*public static void main(String[] args)*/
+    public Client(){
         BroadcastReceiver receiver = new BroadcastReceiver(10502); // port = 10500
         SignalParser parser = SignalParser.getParser();
         Thread parserThread = new Thread(parser);

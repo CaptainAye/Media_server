@@ -35,8 +35,8 @@ public class ServerReceiver implements Runnable {
     }
     
     public void run(){
-        Thread parser = new Thread(SignalParser.getParser());
-        parser.start();
+        //Thread parser = new Thread(SignalParser.getParser());
+        //parser.start();
         
         while(true){
             try{

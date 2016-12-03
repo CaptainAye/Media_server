@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.mediaserver.lists.ClientSideServerList;
 
 /**
  *
@@ -58,6 +59,7 @@ public class MainPanel extends JPanel{
         serverList = new JComboBox();
         serverList.setMaximumSize(new Dimension(300,30));
         serverList.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        ClientSideServerList.getClientSideServerList().addComboBoxListener(serverList);
         
         subscribeButton = new JButton("Subskrybuj");
         subscribeButton.setAlignmentX(Component.CENTER_ALIGNMENT);

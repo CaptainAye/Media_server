@@ -6,7 +6,7 @@
 package org.mediaserver.commands;
 
 
-import client.FileSearcher;
+import org.mediaserver.communication.FileSearcher;
 import java.nio.file.Path;
 import java.util.HashMap;
 
@@ -20,8 +20,11 @@ import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.communication.QueuePacket;
 import org.mediaserver.communication.SignalReceiver;
 import org.mediaserver.interfaces.Command;
+import org.mediaserver.lists.ClientSideServerList;
+import org.mediaserver.lists.ServerSideClientList;
 import org.mediaserver.signals.AccessGrantedSignal;
-import org.mediaserver.signals.AccessRequest;
+import org.mediaserver.signals.AccessRequestSignal;
+import org.mediaserver.signals.BroadcastSignal;
 import org.mediaserver.sockets.BroadcastSocket;
 
 /**
@@ -31,16 +34,23 @@ import org.mediaserver.sockets.BroadcastSocket;
 public class BroadcastSignalCommand implements Command{
 
     private Boolean searched = false;
-    private HashMap<String,Path> filesMap = new HashMap<String,Path>();
+    private HashMap<Path, String> filesMap = new HashMap<Path, String>();
     private Socket broadcastSocket;
     private ArrayList<String> servers;
     private Boolean sent = false;
     public synchronized void execute(QueuePacket data){
-        try{
+        
+        BroadcastSignal signal = (BroadcastSignal) data.getSignal();
+        ClientSideServerList serverList = ClientSideServerList.getClientSideServerList();
+        
+        if (!serverList.serverExists(signal.getId())) // if the client receives server for the first time
+        {
+            serverList.addServer(signal.getLocalIp(), signal.getSourcePort(), signal.getId()); // localIp is localIp of part sending the signal - in the case of broadcast, sending part is server. The source port is the port from which the signal was sent, to the server port
+        }
+       /* try{
             if (!sent){
-                String myIP = "192.168.0.18";
-                Socket socket = new Socket(myIP,10500);
-                DedicatedSender.getSender().send(socket, new AccessRequest(1)); //TODO Client ID - change it
+                Socket socket = new Socket(data.getSignal().getLocalIp(),data.getSignal().getSourcePort());
+                DedicatedSender.getSender().send(socket, new AccessRequestSignal(1)); //TODO Client ID - change it
                 sent = true;
             }
         } catch (IOException e){
@@ -50,7 +60,7 @@ public class BroadcastSignalCommand implements Command{
         if (searched == false){
             filesMap = FileSearcher.searchDirectories();
             searched = true;
-        }
+        }*/
     }
 }
 

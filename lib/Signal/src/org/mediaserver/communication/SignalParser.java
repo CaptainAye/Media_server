@@ -6,12 +6,12 @@
 package org.mediaserver.communication;
 
 import java.util.HashMap;
-import org.mediaserver.commands.AccessRequestCommand;
+import org.mediaserver.commands.AccessRequestSignalCommand;
 import org.mediaserver.commands.BroadcastSignalCommand;
 import org.mediaserver.exceptions.KeyNotFoundException;
 import org.mediaserver.exceptions.NotASignalizableTypeException;
 import org.mediaserver.interfaces.Command;
-import org.mediaserver.signals.AccessRequest;
+import org.mediaserver.signals.AccessRequestSignal;
 import org.mediaserver.signals.BroadcastSignal;
 
 /**
@@ -50,7 +50,7 @@ public class SignalParser implements Runnable{
             register(BroadcastSignal.class,new BroadcastSignalCommand());
             //REGISTER YOUR SIGNALS
             
-            register(AccessRequest.class, new AccessRequestCommand());
+            register(AccessRequestSignal.class, new AccessRequestSignalCommand());
             
         } catch (NotASignalizableTypeException e){
             e.printStackTrace();
@@ -60,7 +60,7 @@ public class SignalParser implements Runnable{
     private void register(Class name,Command signalHandler) throws NotASignalizableTypeException{
         try{
             System.out.println(name);
-            if (Class.forName("org.mediaserver.interfaces.Signalizable").isAssignableFrom(name)){ // NOT SURE if isAssignableFrom does what it should
+            if (Class.forName("org.mediaserver.interfaces.Signalizable").isAssignableFrom(name)){ 
                 signalHandlerMap.put(name, signalHandler);
         }
         else
