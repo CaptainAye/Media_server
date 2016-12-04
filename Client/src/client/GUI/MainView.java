@@ -20,6 +20,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+//tibo
+import client.GUI.MainPanel;
+
 /**
  *
  * @author Natalia
@@ -33,6 +36,9 @@ public class MainView extends JFrame{
     private SharePanel sharePanel;
     private int height = 768;
     private int width = 1024;
+    
+    //tibo
+    public static String server;
     
     
     public MainView(){
@@ -76,6 +82,7 @@ public class MainView extends JFrame{
                 mainView.setVisible(true);
                 mainView.setDefaultCloseOperation(MainView.EXIT_ON_CLOSE);
                 Client client = new Client();
+                         
             }
         });
     }

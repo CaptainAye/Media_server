@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -18,6 +19,10 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.mediaserver.lists.ClientSideServerList;
+
+//tibo
+import client.Client;
+
 
 /**
  *
@@ -33,11 +38,15 @@ public class MainPanel extends JPanel{
     private JLabel label2;
     private JButton subscribeButton;
     private JComboBox serverList;
+    
+    //tibo
+   
 
     
-    
-    MainPanel(){
+    public MainPanel(){
         initComponents();
+        //tibo
+        //client = new Client();
     }
     
     private void initComponents(){
@@ -64,7 +73,9 @@ public class MainPanel extends JPanel{
         subscribeButton = new JButton("Subskrybuj");
         subscribeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         subscribeButton.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-
+        //Tibo
+        subscribeButton.setActionCommand("getServerList");
+       
 
         add(Box.createRigidArea(new Dimension(0, 20)));
         add(label1);
@@ -78,6 +89,23 @@ public class MainPanel extends JPanel{
     }
     
     public void subscribeListener(ActionListener listener) {
-            subscribeButton.addActionListener(listener);
-  }
+            subscribeButton.addActionListener(listener);            
+    }
+    //tibo
+    public JComboBox getJComboBox(){
+        return serverList;
+    }
+    /*Tibo
+    private class ButtonClickListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String command = e.getActionCommand(); 
+            if( command.equals( "getServerList" ))  {
+                //System.out.println(serverList.getSelectedItem().toString());
+                Client.addToSubServerList(serverList.getSelectedItem().toString());
+               // Client = serverList.getSelectedItem().toString();
+            }
+        }
+    }*/
 }

@@ -12,6 +12,9 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -23,7 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
-
+import org.mediaserver.lists.ClientSideServerList;
 /**
  *
  * @author Natalia
@@ -76,6 +79,10 @@ public class SharePanel extends JPanel{
         add(label1);
         add(new JScrollPane(list));
         add(button);
+    }
+    //Tibo
+    public void setContent(HashMap<Path,String> listaPozycji){
+        
     }
 
     public void checkFiles(MouseAdapter adapter) {

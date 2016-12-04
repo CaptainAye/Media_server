@@ -9,18 +9,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
+
+
+import client.Client;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.mediaserver.lists.ClientSideServerList;
+import org.mediaserver.communication.FileSearcher;
 /**
  *
  * @author Natalia
  */
+ 
 public class Controller {
     
     private final MainView mainView;
     private final MainPanel mainPanel;
     private SharePanel sharePanel;
+    //tibo
+    private JComboBox serverlist;
+   
     
     public Controller(MainView mainView, JPanel panel1, JPanel panel2){
         this.mainView = mainView;
@@ -37,6 +50,17 @@ public class Controller {
             mainView.getContentPane().validate();
             mainView.getContentPane().repaint();
            
+            
+            //Tibo
+            //dodanie servera do listy subsrybowanych serwerów
+            addServerToList();
+            searchFiles();
+            //Client.addToSubServerList(serverlist.getSelectedItem().toString());
+            //przeszukiwanie plików
+            //Client.researchFiles();
+            
+           
+            
               
             sharePanel.list.addMouseListener(new MouseAdapter() {
                 @Override
@@ -57,13 +81,22 @@ public class Controller {
            });         
         }
       }
-    );
-        
-        
-        
-        
-        
-        
-        
+    );     
   }
+    public void addServerToList(){
+        serverlist = mainPanel.getJComboBox();
+        //Server id:1 ip: 127.0.0.1
+        String temp = serverlist.getSelectedItem().toString();
+        String[] parts = temp.split(" ip: ");
+        
+        String ip = parts[1];
+        String str_id = parts[0].substring(parts[0].lastIndexOf(":")+1);
+        int id = Integer.parseInt(str_id);
+        //System.out.println(ip);
+        //System.out.println(id);
+        ClientSideServerList.getClientSideServerList().addServerToList(ip,id,10502);
+    }
+    public void searchFiles(){
+        FileSearcher.searchDirectories();
+    }
 }
