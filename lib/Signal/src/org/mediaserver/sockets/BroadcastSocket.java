@@ -74,12 +74,12 @@ public class BroadcastSocket implements Socketable{
     public Signalizable receive() throws IOException, ClassNotFoundException{
         Signalizable signal = null;
         try{
-         byte[] receiveData = new byte[1024];
-         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-         socket.receive(receivePacket);
-         ByteArrayInputStream baos = new ByteArrayInputStream(receiveData);
-         ObjectInputStream oos = new ObjectInputStream(baos);
-         signal =(Signalizable) oos.readObject();
+            byte[] receiveData = new byte[1024];
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            socket.receive(receivePacket);
+            ByteArrayInputStream baos = new ByteArrayInputStream(receiveData);
+            ObjectInputStream oos = new ObjectInputStream(baos);
+            signal =(Signalizable) oos.readObject();
         }
         finally{
             return signal;

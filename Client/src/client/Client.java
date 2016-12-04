@@ -11,6 +11,7 @@ import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.communication.ServerReceiver;
 import org.mediaserver.communication.SignalParser;
 import org.mediaserver.communication.SignalReceiver;
+import org.mediaserver.generator.IdentificationNumberGenerator;
 import org.mediaserver.signals.BroadcastSignal;
 
 /**
@@ -23,14 +24,16 @@ public class Client {
      * @param args the command line arguments
      */
     /*public static void main(String[] args)*/
+    
+    private Integer clientId;
     public Client(){
+        clientId = IdentificationNumberGenerator.generateId();
         BroadcastReceiver receiver = new BroadcastReceiver(10502); // port = 10500
         SignalParser parser = SignalParser.getParser();
         Thread parserThread = new Thread(parser);
         parserThread.start();
         Thread serverReceiverThread = new Thread(receiver);
         serverReceiverThread.start();
-     
     }
     
 }

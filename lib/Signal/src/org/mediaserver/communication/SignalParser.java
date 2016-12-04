@@ -20,12 +20,19 @@ import org.mediaserver.signals.BroadcastSignal;
  */
 public class SignalParser implements Runnable{
     private static SignalParser parser;
+    private Integer callerId;
+    
     private HashMap<Class, Command> signalHandlerMap;
     
     
     private SignalParser(){
             signalHandlerMap = new HashMap<>();
             registerSignals();
+            callerId = null;
+    }
+    
+    public void setCallerId(Integer callerId){
+        this.callerId = callerId;
     }
     
     public static synchronized SignalParser getParser(){
@@ -75,7 +82,7 @@ public class SignalParser implements Runnable{
     public void parse(QueuePacket data) throws KeyNotFoundException
     {
         if (signalHandlerMap.containsKey(data.getSignal().getClass())){
-            signalHandlerMap.get(data.getSignal().getClass()).execute(data);
+            signalHandlerMap.get(data.getSignal().getClass()).execute(data,callerId);
         }
         else{
             throw new KeyNotFoundException();

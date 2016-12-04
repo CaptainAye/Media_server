@@ -27,14 +27,14 @@ public class AccessRequestSignalCommand implements Command {
         return false;
     }
     //przesyłanie drzewa z kompa klienta
-    public void execute(QueuePacket data) {
+    public void execute(QueuePacket data,Integer callerId) {
         signal =(AccessRequestSignal) data.getSignal();
         Integer clientId = signal.getId();
         clientList = ServerSideClientList.getClientList();
         System.out.println("Access request has been received from client no " + clientId + " from ip: " + data.getSocket().getInetAddress().getHostAddress().toString() );
         if (ClientIsAllowed()){
             if (!clientList.clientExists(clientId)){
-            
+                clientList.add(signal.getFilesToIndex(), clientId);
             }
             try{
             DedicatedSender.getSender().send(data.getSocket(), new AccessGrantedSignal());

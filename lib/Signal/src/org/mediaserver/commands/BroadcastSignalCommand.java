@@ -38,14 +38,14 @@ public class BroadcastSignalCommand implements Command{
     private Socket broadcastSocket;
     private ArrayList<String> servers;
     private Boolean sent = false;
-    public synchronized void execute(QueuePacket data){
+    public synchronized void execute(QueuePacket data,Integer callerId){
         
         BroadcastSignal signal = (BroadcastSignal) data.getSignal();
         ClientSideServerList serverList = ClientSideServerList.getClientSideServerList();
         
         if (!serverList.serverExists(signal.getId())) // if the client receives server for the first time
         {
-            serverList.addServer(signal.getLocalIp(), signal.getSourcePort(), signal.getId()); // localIp is localIp of part sending the signal - in the case of broadcast, sending part is server. The source port is the port from which the signal was sent, to the server port
+            serverList.addServerToList(signal.getLocalIp(), signal.getSourcePort(), signal.getId()); // localIp is localIp of part sending the signal - in the case of broadcast, sending part is server. The source port is the port from which the signal was sent, to the server port
         }
        /* try{
             if (!sent){

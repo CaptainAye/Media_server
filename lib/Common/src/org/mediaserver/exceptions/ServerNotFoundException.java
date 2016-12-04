@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.mediaserver.interfaces;
-
-import org.mediaserver.communication.QueuePacket;
+package org.mediaserver.exceptions;
 
 /**
  *
  * @author Tomek
  */
-public interface Command {
-    public void execute(QueuePacket data,Integer callerId);
+public class ServerNotFoundException extends Exception{
+    public ServerNotFoundException(){
+        super("Server is not in the list");
+    }
     
 }

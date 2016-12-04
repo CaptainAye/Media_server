@@ -5,6 +5,7 @@
  */
 package org.mediaserver.signals;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import org.mediaserver.interfaces.Signalizable;
 
@@ -13,17 +14,17 @@ import org.mediaserver.interfaces.Signalizable;
  * @author Natalka
  */
 public class AccessRequestSignal extends Signalizable{
-    private HashMap<String,String> map;
+    private HashMap<Path,String> map;
     public AccessRequestSignal (Integer id)
     {
         setId(id);
     }
     
-    public void setFilesForIndexing(HashMap<String,String> map){
+    public void setFilesForIndexing(HashMap<Path,String> map){
         this.map.putAll(map);
     }
     
-    public HashMap<String,String> getFilesToIndex(){
+    public HashMap<Path,String> getFilesToIndex(){
         return map;
     }
 }

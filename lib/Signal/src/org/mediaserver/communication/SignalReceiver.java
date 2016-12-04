@@ -5,6 +5,7 @@
  */
 package org.mediaserver.communication;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
@@ -39,18 +40,15 @@ public class SignalReceiver{
                 {
                     throw new NullPointerException();
                 }
-                
                 ObjectInputStream receiverStream = new ObjectInputStream(socket.getInputStream());
-                
                 while(!socket.isClosed()){
                     Signalizable signal = (Signalizable) receiverStream.readObject();
                     QueuePacket message = new QueuePacket(socket, signal);
-                    //message.set(socket, signal);
                     SignalQueue.getSignalQueue().enqueue(message);      
                 }
             } catch (IOException e)
             {
-                e.printStackTrace();
+                //e.printStackTrace();
                 //TODO handle IOException in run() of ClientThread class in SignalReceiver
             } catch (ClassNotFoundException e){
                 e.printStackTrace();
