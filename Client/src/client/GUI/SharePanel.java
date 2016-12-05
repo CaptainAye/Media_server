@@ -15,6 +15,9 @@ import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -26,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import org.mediaserver.communication.FileSearcher;
 import org.mediaserver.lists.ClientSideServerList;
 /**
  *
@@ -39,9 +43,14 @@ public class SharePanel extends JPanel{
     private JLabel label1;
     private JButton button;
     JList<CheckboxListItem> list;
+    CheckboxListItem[] checkboxList;
+    HashMap<Path,String> listaPozycji;
+    String[] keys;
+    String[] values;
     
     
     SharePanel(){
+        setContent(FileSearcher.searchDirectories());
         initComponents();
     }
     
@@ -59,19 +68,8 @@ public class SharePanel extends JPanel{
         button = new JButton("coś");
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-       
-
-        // Create a list containing CheckboxListItem's
-        list = new JList<CheckboxListItem>(new CheckboxListItem[] { 
-            new CheckboxListItem("apple"),
-            new CheckboxListItem("orange"),
-            new CheckboxListItem("mango"),
-            new CheckboxListItem("paw paw"),
-            new CheckboxListItem("banana") });
-        
-        // Use a CheckboxListRenderer (see below)
-        // to renderer list cells
  
+        
         list.setCellRenderer(new CheckboxListRenderer());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
@@ -83,6 +81,20 @@ public class SharePanel extends JPanel{
     //Tibo
     public void setContent(HashMap<Path,String> listaPozycji){
         
+        checkboxList = new CheckboxListItem[listaPozycji.size()];
+        list = new JList<CheckboxListItem>(checkboxList);
+        keys = new String[listaPozycji.size()];
+        values = new String[listaPozycji.size()];
+        Set entries = listaPozycji.entrySet();
+        Iterator entriesIterator = entries.iterator();
+        int i = 0;
+        while(entriesIterator.hasNext()){
+            Map.Entry mapping = (Map.Entry) entriesIterator.next();
+            keys[i] = mapping.getKey().toString();
+            values[i] = mapping.getValue().toString();
+            checkboxList[i] = new CheckboxListItem(values[i]);
+            i++;
+        }
     }
 
     public void checkFiles(MouseAdapter adapter) {
