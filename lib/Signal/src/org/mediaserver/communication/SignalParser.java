@@ -6,13 +6,19 @@
 package org.mediaserver.communication;
 
 import java.util.HashMap;
+import org.mediaserver.commands.AccessGrantedSignalCommand;
 import org.mediaserver.commands.AccessRequestSignalCommand;
+import org.mediaserver.commands.GetFilesResponseSignalCommand;
 import org.mediaserver.commands.BroadcastSignalCommand;
+import org.mediaserver.commands.GetFilesRequestSignalCommand;
 import org.mediaserver.exceptions.KeyNotFoundException;
 import org.mediaserver.exceptions.NotASignalizableTypeException;
 import org.mediaserver.interfaces.Command;
+import org.mediaserver.signals.AccessGrantedSignal;
 import org.mediaserver.signals.AccessRequestSignal;
+import org.mediaserver.signals.GetFilesResponseSignal;
 import org.mediaserver.signals.BroadcastSignal;
+import org.mediaserver.signals.GetFilesRequestSignal;
 
 /**
  *
@@ -55,9 +61,11 @@ public class SignalParser implements Runnable{
     private void registerSignals(){
         try{
             register(BroadcastSignal.class,new BroadcastSignalCommand());
+            register(AccessRequestSignal.class,new AccessRequestSignalCommand());
+            register(GetFilesResponseSignal.class, new GetFilesResponseSignalCommand());
+            register(AccessGrantedSignal.class, new AccessGrantedSignalCommand());
+            register(GetFilesRequestSignal.class,new GetFilesRequestSignalCommand());
             //REGISTER YOUR SIGNALS
-            
-            register(AccessRequestSignal.class, new AccessRequestSignalCommand());
             
         } catch (NotASignalizableTypeException e){
             e.printStackTrace();

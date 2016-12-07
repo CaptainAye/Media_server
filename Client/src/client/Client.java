@@ -25,7 +25,7 @@ public class Client {
      */
     /*public static void main(String[] args)*/
     
-    private Integer clientId;
+    private static Integer clientId;
     public Client(){
         clientId = IdentificationNumberGenerator.generateId();
         BroadcastReceiver receiver = new BroadcastReceiver(10502); // port = 10500
@@ -34,6 +34,9 @@ public class Client {
         parserThread.start();
         Thread serverReceiverThread = new Thread(receiver);
         serverReceiverThread.start();
+    }
+    public static Integer getId(){
+        return clientId;
     }
     
 }

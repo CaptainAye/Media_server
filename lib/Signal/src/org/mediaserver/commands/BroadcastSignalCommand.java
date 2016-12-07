@@ -23,7 +23,7 @@ import org.mediaserver.interfaces.Command;
 import org.mediaserver.lists.ClientSideServerList;
 import org.mediaserver.lists.ServerSideClientList;
 import org.mediaserver.signals.AccessGrantedSignal;
-import org.mediaserver.signals.AccessRequestSignal;
+import org.mediaserver.signals.GetFilesResponseSignal;
 import org.mediaserver.signals.BroadcastSignal;
 import org.mediaserver.sockets.BroadcastSocket;
 
@@ -50,7 +50,7 @@ public class BroadcastSignalCommand implements Command{
        /* try{
             if (!sent){
                 Socket socket = new Socket(data.getSignal().getLocalIp(),data.getSignal().getSourcePort());
-                DedicatedSender.getSender().send(socket, new AccessRequestSignal(1)); //TODO Client ID - change it
+                DedicatedSender.getSender().send(socket, new GetFilesResponseSignal(1)); //TODO Client ID - change it
                 sent = true;
             }
         } catch (IOException e){

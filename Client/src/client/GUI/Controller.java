@@ -16,11 +16,15 @@ import javax.swing.JPanel;
 
 
 import client.Client;
+import java.io.IOException;
+import java.net.Socket;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.lists.ClientSideServerList;
 import org.mediaserver.communication.FileSearcher;
+import org.mediaserver.signals.AccessRequestSignal;
 /**
  *
  * @author Natalia
@@ -43,14 +47,17 @@ public class Controller {
         mainPanel.subscribeListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent evt) {
+            try{
+                DedicatedSender.getSender().send(new Socket(getIpFromComboBox(),getPortFromComboBox()), new AccessRequestSignal(Client.getId()));
+            } catch (IOException e){
+                e.printStackTrace();
+        }
             System.out.println("Dodano panel udostępniania");
             mainView.getContentPane().remove(panel1);
             mainView.getContentPane().add(panel2);
             mainView.getContentPane().invalidate();
             mainView.getContentPane().validate();
             mainView.getContentPane().repaint();
-           
-            
             //Tibo
             //dodanie servera do listy subsrybowanych serwerów
             addServerToList();
@@ -83,6 +90,23 @@ public class Controller {
       }
     );     
   }
+    
+    public String getIpFromComboBox(){
+        serverlist = mainPanel.getJComboBox();
+        String temp = serverlist.getSelectedItem().toString();
+        String[] parts = temp.split(" ip: ");
+        
+        return parts[1];
+    }
+    
+    public Integer getPortFromComboBox(){
+        serverlist = mainPanel.getJComboBox();
+        //Server id:1 ip: 127.0.0.1
+        String temp = serverlist.getSelectedItem().toString();
+        String[] parts = temp.split(" ip: ");
+        String str_id = parts[0].substring(parts[0].lastIndexOf(":")+1);
+        return Integer.parseInt(str_id);
+    }
     public void addServerToList(){
         serverlist = mainPanel.getJComboBox();
         //Server id:1 ip: 127.0.0.1

@@ -4,21 +4,27 @@
  * and open the template in the editor.
  */
 package org.mediaserver.signals;
+
 import java.nio.file.Path;
 import java.util.HashMap;
 import org.mediaserver.interfaces.Signalizable;
+
 /**
  *
- * @author Tomek
+ * @author Natalka
  */
-public class AccessGrantedSignal extends Signalizable{
-    
-    private HashMap<Path,String> indexedFilesMap;
-    
-    public AccessGrantedSignal(Integer id){
+public class GetFilesResponseSignal extends Signalizable{
+    private HashMap<Path,String> map;
+    public GetFilesResponseSignal (Integer id)
+    {
         setId(id);
     }
     
+    public void setFilesForIndexing(HashMap<Path,String> map){
+        this.map.putAll(map);
+    }
     
-    
+    public HashMap<Path,String> getFilesToIndex(){
+        return map;
+    }
 }

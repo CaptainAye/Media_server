@@ -11,9 +11,10 @@ import org.mediaserver.interfaces.Signalizable;
  *
  * @author Tomek
  */
-public class AccessRequestSignal extends Signalizable {
-    public AccessRequestSignal(Integer id){
-        setId(id);
+public class GetFilesRequestSignal extends Signalizable {
+    
+    public GetFilesRequestSignal(Integer callerId){
+        setId(callerId);
     }
     
 }

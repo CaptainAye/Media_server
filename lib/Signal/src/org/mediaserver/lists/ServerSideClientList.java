@@ -27,13 +27,16 @@ public class ServerSideClientList implements Serializable {
     
     private static class Client{
         HashMap<Path,String> filesMap;
-        Integer id;
+        final Integer id;
         
         Client (HashMap<Path,String> filesMap,Integer id){
             this.filesMap = filesMap;
             this.id = id;
         }
         
+        public Integer getId(){
+            return id;
+        }
     }
     
     
@@ -68,9 +71,23 @@ public class ServerSideClientList implements Serializable {
         return false;
     }
     
-    public void add(HashMap<Path,String> filesMap, Integer id){
+    public void addToList(HashMap<Path,String> filesMap, Integer id){
         if (!clientExists(id)){
             list.add(new Client(filesMap, id));
+            saveClientList();
+        }
+    }
+    
+    public void removeFromList(Integer id){
+        Client clientToRemove = null;
+        for(Client client : list){
+            if (client.getId() == id){
+                clientToRemove = client;
+                break;
+            }
+        }
+        if (clientToRemove != null){
+            list.remove(clientToRemove);
             saveClientList();
         }
     }
