@@ -31,8 +31,8 @@ import client.Client;
 public class MainPanel extends JPanel{
     
     //panel główny z serwerami
-    private int width = 1024;
-    private int height = 668;
+    private final int width = 1024;
+    private final int height = 668;
 
     private JLabel label1;
     private JLabel label2;
@@ -66,11 +66,11 @@ public class MainPanel extends JPanel{
         label2.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         serverList = new JComboBox();
-        serverList.setMaximumSize(new Dimension(300,30));
+        serverList.setMaximumSize(new Dimension(400,30));
         serverList.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         ClientSideServerList.getClientSideServerList().addComboBoxListener(serverList);
         
-        subscribeButton = new JButton("Subskrybuj");
+        subscribeButton = new JButton("SUBSKRYBUJ");
         subscribeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         subscribeButton.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         //Tibo
@@ -89,12 +89,13 @@ public class MainPanel extends JPanel{
     }
     
     public void subscribeListener(ActionListener listener) {
-            subscribeButton.addActionListener(listener);            
+            subscribeButton.addActionListener(listener);                                                     
     }
     //tibo
     public JComboBox getJComboBox(){
         return serverList;
     }
+    
     /*Tibo
     private class ButtonClickListener implements ActionListener{
 
