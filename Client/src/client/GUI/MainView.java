@@ -22,7 +22,6 @@ import javax.swing.SwingUtilities;
 
 //tibo
 import client.GUI.MainPanel;
-import java.awt.Toolkit;
 
 /**
  *
@@ -37,7 +36,6 @@ public class MainView extends JFrame{
     private SharePanel sharePanel;
     private int height = 768;
     private int width = 1024;
-    private Dimension window = Toolkit.getDefaultToolkit().getScreenSize();
     
     //tibo
     public static String server;
@@ -71,7 +69,7 @@ public class MainView extends JFrame{
 
         titleLabel.setFont(new Font("Times New Roman", Font.ITALIC, 50));
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
-         
+        
         control = new Controller(this,mainPanel,sharePanel);
         
     }
@@ -81,7 +79,6 @@ public class MainView extends JFrame{
             @Override
             public void run() {
                 MainView mainView = new MainView();
-                mainView.setLocationRelativeTo(null);
                 mainView.setVisible(true);
                 mainView.setDefaultCloseOperation(MainView.EXIT_ON_CLOSE);
                 Client client = new Client();

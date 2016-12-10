@@ -44,7 +44,7 @@ public class FileSearcher {
         public FileVisitResult visitFile(Path file,BasicFileAttributes attr){
             for (String extension: extensionsArray){
                 if (file.getFileName().toString().contains(extension)){
-                    //System.out.println(file);
+                    System.out.println(file);
                     FILES_MAP.put( file , file.getFileName().toString());
                 }
             }
