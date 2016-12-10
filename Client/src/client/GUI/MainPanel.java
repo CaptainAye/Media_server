@@ -66,7 +66,7 @@ public class MainPanel extends JPanel{
         label2.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         serverList = new JComboBox();
-        serverList.setMaximumSize(new Dimension(300,30));
+        serverList.setMaximumSize(new Dimension(500,30));
         serverList.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         ClientSideServerList.getClientSideServerList().addComboBoxListener(serverList);
         

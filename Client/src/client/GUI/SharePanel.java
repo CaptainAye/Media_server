@@ -49,13 +49,43 @@ public class SharePanel extends JPanel{
     String[] values;
     
     
+    
     SharePanel(){
-        setContent(FileSearcher.searchDirectories());
+        //setContent(FileSearcher.searchDirectories());
+        //SearchFiles searchfiles  = new SearchFiles(); 
+        //Thread thread = new Thread(searchfiles);
+        //thread.start();
+       // listaPozycji = new HashMap<Path,String>();
+       // listaPozycji.put(null, " ");
         initComponents();
     }
     
     private void initComponents(){
         
+        setSize(width,height);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setMaximumSize(new Dimension(width,height));
+        setBorder(BorderFactory.createLineBorder(Color.gray));
+        
+        label1 = new JLabel("Czekaj cierpliwie, jesteśmy w trakccie przeszukiwania plików");
+        label1.setFont(new Font("Times New Roman", Font.PLAIN, 25));
+        label1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        //button = new JButton("coś");
+        //button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //button.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+       
+        //list.setCellRenderer(new CheckboxListRenderer());
+        //list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        add(Box.createRigidArea(new Dimension(0, 20)));
+        add(label1);
+        //add(new JScrollPane(list));
+        //add(button);
+    }
+    private void secondinitiation(){
+        remove(label1);
+        //remove(button);
         setSize(width,height);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setMaximumSize(new Dimension(width,height));
@@ -68,8 +98,7 @@ public class SharePanel extends JPanel{
         button = new JButton("coś");
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setFont(new Font("Times New Roman", Font.PLAIN, 20));
- 
-        
+       
         list.setCellRenderer(new CheckboxListRenderer());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
@@ -77,10 +106,12 @@ public class SharePanel extends JPanel{
         add(label1);
         add(new JScrollPane(list));
         add(button);
+        revalidate();
     }
+  
     //Tibo
     public void setContent(HashMap<Path,String> listaPozycji){
-        
+      
         checkboxList = new CheckboxListItem[listaPozycji.size()];
         list = new JList<CheckboxListItem>(checkboxList);
         keys = new String[listaPozycji.size()];
@@ -95,6 +126,7 @@ public class SharePanel extends JPanel{
             checkboxList[i] = new CheckboxListItem(values[i]);
             i++;
         }
+        secondinitiation();
     }
 
     public void checkFiles(MouseAdapter adapter) {
@@ -140,5 +172,16 @@ public class SharePanel extends JPanel{
           setText(value.toString());
           return this;
        }
+    }
+    
+    //tibo
+    private class SearchFiles implements Runnable {
+
+        @Override
+        public void run() {
+            setContent(FileSearcher.searchDirectories());
+            //initComponents();
+        }
+        
     }
 }
