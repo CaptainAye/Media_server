@@ -108,7 +108,7 @@ public  class ClientSideServerList {
     }
     
     private String comboBoxStringBuilder(Server server){
-        return "Server id:" + server.getId() + " ip: " + server.getIp();
+        return "Server id:" + server.getId() + " ip: " + server.getIp() + " port:" + server.getPort();
     }
     
     private ClientSideServerList(){

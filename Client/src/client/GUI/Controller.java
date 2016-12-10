@@ -53,6 +53,13 @@ public class Controller {
                 e.printStackTrace();
         }
             System.out.println("Dodano panel udostępniania");
+            
+            //TIBO
+            SearchFiles searchfiles  = new SearchFiles(); 
+            Thread thread = new Thread(searchfiles);
+            thread.start();
+            
+            
             mainView.getContentPane().remove(panel1);
             mainView.getContentPane().add(panel2);
             mainView.getContentPane().invalidate();
@@ -61,7 +68,9 @@ public class Controller {
             //Tibo
             //dodanie servera do listy subsrybowanych serwerów
             addServerToList();
-            searchFiles();
+            //sharePanel.setContent(FileSearcher.searchDirectories());
+            //sharePanel.setContent(FileSearcher.searchDirectories());
+             
             //Client.addToSubServerList(serverlist.getSelectedItem().toString());
             //przeszukiwanie plików
             //Client.researchFiles();
@@ -101,13 +110,15 @@ public class Controller {
     
     public Integer getPortFromComboBox(){
         serverlist = mainPanel.getJComboBox();
-        //Server id:1 ip: 127.0.0.1
         String temp = serverlist.getSelectedItem().toString();
-        String[] parts = temp.split(" ip: ");
-        String str_id = parts[0].substring(parts[0].lastIndexOf(":")+1);
+        String[] parts = temp.split("port:");
+        System.out.println(parts[1]);
+        String str_id = parts[1].substring(parts[1].lastIndexOf(":")+1);
+        System.out.println(parts[1]);
         return Integer.parseInt(str_id);
     }
     public void addServerToList(){
+        
         serverlist = mainPanel.getJComboBox();
         //Server id:1 ip: 127.0.0.1
         String temp = serverlist.getSelectedItem().toString();
@@ -122,5 +133,13 @@ public class Controller {
     }
     public void searchFiles(){
         FileSearcher.searchDirectories();
+    }
+    private class SearchFiles implements Runnable {
+
+        @Override
+        public void run() {
+            sharePanel.setContent(FileSearcher.searchDirectories());
+        }
+        
     }
 }
