@@ -16,11 +16,14 @@ import javax.swing.JPanel;
 
 
 import client.Client;
+import java.awt.Component;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.JCheckBox;
+import javax.swing.ListCellRenderer;
 import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.lists.ClientSideServerList;
 import org.mediaserver.communication.FileSearcher;
@@ -48,45 +51,37 @@ public class Controller {
         @Override
         public void actionPerformed(ActionEvent evt) {
             try{
-                DedicatedSender.getSender().send(new Socket(getIpFromComboBox(),getPortFromComboBox()), new AccessRequestSignal(Client.getId()));
+                DedicatedSender.getSender().send(new Socket(getIpFromComboBox(),10502), new AccessRequestSignal(Client.getId()));
             } catch (IOException e){
                 e.printStackTrace();
         }
-            System.out.println("Dodano panel udostępniania");
-            
-            //TIBO
-            SearchFiles searchfiles  = new SearchFiles(); 
-            Thread thread = new Thread(searchfiles);
-            thread.start();
-            
-            
             mainView.getContentPane().remove(panel1);
             mainView.getContentPane().add(panel2);
-            mainView.getContentPane().invalidate();
-            mainView.getContentPane().validate();
+            mainView.getContentPane().revalidate();
             mainView.getContentPane().repaint();
+            
             //Tibo
             //dodanie servera do listy subsrybowanych serwerów
             addServerToList();
-            //sharePanel.setContent(FileSearcher.searchDirectories());
-            //sharePanel.setContent(FileSearcher.searchDirectories());
-             
             //Client.addToSubServerList(serverlist.getSelectedItem().toString());
             //przeszukiwanie plików
             //Client.researchFiles();
             
            
             
-              
+            //sharePanel.setContent(FileSearcher.searchDirectories()); 
+            Thread updateListThread = new Thread(new SharePanel.UpdateFilesList());
+            updateListThread.start();
+            
             sharePanel.list.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent event) {
-                    JList<SharePanel.CheckboxListItem> list =
-                   (JList<SharePanel.CheckboxListItem>) event.getSource();
+                    JList<CheckboxListItem> list =
+                   (JList<CheckboxListItem>) event.getSource();
 
                 // Get index of item clicked
                 int index = list.locationToIndex(event.getPoint());
-                SharePanel.CheckboxListItem item = (SharePanel.CheckboxListItem) list.getModel().getElementAt(index);
+                CheckboxListItem item = (CheckboxListItem) list.getModel().getElementAt(index);
 
                 // Toggle selected state
                 item.setSelected(!item.isSelected());
@@ -96,15 +91,14 @@ public class Controller {
            }
            });         
         }
-      }
+      }    
     );     
   }
     
     public String getIpFromComboBox(){
         serverlist = mainPanel.getJComboBox();
         String temp = serverlist.getSelectedItem().toString();
-        String[] parts = temp.split(" ip: ");
-        
+        String[] parts = temp.split(" ip: ");;
         return parts[1];
     }
     
@@ -131,15 +125,47 @@ public class Controller {
         //System.out.println(id);
         ClientSideServerList.getClientSideServerList().addServerToList(ip,id,10502);
     }
+    
     public void searchFiles(){
         FileSearcher.searchDirectories();
     }
-    private class SearchFiles implements Runnable {
-
-        @Override
-        public void run() {
-            sharePanel.setContent(FileSearcher.searchDirectories());
-        }
         
+    static class CheckboxListItem {
+       private String label;
+       private boolean isSelected = false;
+
+       public CheckboxListItem(String label) {
+          this.label = label;
+       }
+
+       public boolean isSelected() {
+          return isSelected;
+       }
+
+       public void setSelected(boolean isSelected) {
+          this.isSelected = isSelected;
+       }
+
+       public String toString() {
+          return label;
+       }
+    }
+
+    // Handles rendering cells in the list using a check box
+
+    static class CheckboxListRenderer extends JCheckBox implements ListCellRenderer<CheckboxListItem> {
+
+       @Override
+       public Component getListCellRendererComponent(
+             JList<? extends CheckboxListItem> list, CheckboxListItem value,
+             int index, boolean isSelected, boolean cellHasFocus) {
+          setEnabled(list.isEnabled());
+          setSelected(value.isSelected());
+          setFont(list.getFont());
+          setBackground(list.getBackground());
+          setForeground(list.getForeground());
+          setText(value.toString());
+          return this;
+       }
     }
 }
