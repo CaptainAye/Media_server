@@ -22,7 +22,11 @@ import java.net.Socket;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
 import javax.swing.ListCellRenderer;
 import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.lists.ClientSideServerList;
@@ -38,20 +42,23 @@ public class Controller {
     private final MainView mainView;
     private final MainPanel mainPanel;
     private SharePanel sharePanel;
+    private FilesPanel filesPanel;
     //tibo
     private JComboBox serverlist;
+    private static HashMap<Path,String> selectedFilesMap;
    
     
-    public Controller(MainView mainView, JPanel panel1, JPanel panel2){
+    public Controller(MainView mainView, Component panel1, Component panel2, Component panel3){
         this.mainView = mainView;
         this.mainPanel = (MainPanel) panel1;
         this.sharePanel = (SharePanel) panel2;
+        this.filesPanel = (FilesPanel) panel3;
         
         mainPanel.subscribeListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent evt) {
             try{
-                DedicatedSender.getSender().send(new Socket(getIpFromComboBox(),10502), new AccessRequestSignal(Client.getId()));
+                DedicatedSender.getSender().send(new Socket(getIpFromComboBox(),getPortFromComboBox()), new AccessRequestSignal(Client.getId()));
             } catch (IOException e){
                 e.printStackTrace();
         }
@@ -64,14 +71,11 @@ public class Controller {
             //dodanie servera do listy subsrybowanych serwerów
             addServerToList();
             //Client.addToSubServerList(serverlist.getSelectedItem().toString());
-            //przeszukiwanie plików
-            //Client.researchFiles();
             
-           
-            
-            //sharePanel.setContent(FileSearcher.searchDirectories()); 
             Thread updateListThread = new Thread(new SharePanel.UpdateFilesList());
             updateListThread.start();
+            
+            selectedFilesMap = new HashMap<Path,String>();
             
             sharePanel.list.addMouseListener(new MouseAdapter() {
                 @Override
@@ -85,31 +89,73 @@ public class Controller {
 
                 // Toggle selected state
                 item.setSelected(!item.isSelected());
+                selectedFilesMap.put(sharePanel.getMapKey(index), sharePanel.getMapValue(index));
 
                 // Repaint cell
                 list.repaint(list.getCellBounds(index, index));
+                
            }
            });         
         }
-      }    
-    );     
-  }
-    
+      }
+    );
+
+        sharePanel.sendListener(new ActionListener(){
+            public void actionPerformed(ActionEvent evt) {
+                //wysłanie plików na serwer
+                mainView.getContentPane().remove(panel2);
+                mainView.getContentPane().add(panel3);
+                mainView.getContentPane().revalidate();
+                mainView.getContentPane().repaint();
+                
+                Set entries = selectedFilesMap.entrySet();
+                Iterator entriesIterator = entries.iterator();
+                ArrayList<String> values = new ArrayList<String>(selectedFilesMap.size());
+               
+                int i = 0;
+                while(entriesIterator.hasNext()){
+                    Map.Entry mapping = (Map.Entry) entriesIterator.next();
+                    values.add(i,mapping.getValue().toString());
+                    
+                    String temp = values.get(i);
+                    String[] parts = temp.split("\\.(?=[^\\.]+$)");
+                    
+                    switch(parts[1])
+                    {
+                        case "mp3": filesPanel.getMusicModel().addElement(temp);
+                                    break;
+                        case "avi": filesPanel.getVideoModel().addElement(temp);
+                                    break;
+                        case "jpg": filesPanel.getPhotoModel().addElement(temp);
+                                    break;
+                    }
+                }
+            }
+        }
+        );
+    }
     public String getIpFromComboBox(){
         serverlist = mainPanel.getJComboBox();
         String temp = serverlist.getSelectedItem().toString();
-        String[] parts = temp.split(" ip: ");;
+        String[] parts = temp.split(" ip: ");
         return parts[1];
     }
     
     public Integer getPortFromComboBox(){
         serverlist = mainPanel.getJComboBox();
         String temp = serverlist.getSelectedItem().toString();
-        String[] parts = temp.split("port:");
+        String[] parts = temp.split(" port: ");
         System.out.println(parts[1]);
         String str_id = parts[1].substring(parts[1].lastIndexOf(":")+1);
-        System.out.println(parts[1]);
         return Integer.parseInt(str_id);
+    }
+    
+    public JList getSelectedFromSharePanel(){
+        JList list = sharePanel.getList();
+        JList selectedList = null;
+        
+        
+        return selectedList;
     }
     public void addServerToList(){
         
@@ -121,8 +167,6 @@ public class Controller {
         String ip = parts[1];
         String str_id = parts[0].substring(parts[0].lastIndexOf(":")+1);
         int id = Integer.parseInt(str_id);
-        //System.out.println(ip);
-        //System.out.println(id);
         ClientSideServerList.getClientSideServerList().addServerToList(ip,id,10502);
     }
     

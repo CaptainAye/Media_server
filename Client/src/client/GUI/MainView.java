@@ -31,6 +31,7 @@ import java.awt.Toolkit;
 public class MainView extends JFrame{
     
     private Controller control;
+    private FilesPanel filesPanel;
     private JPanel titlePanel;
     private JLabel titleLabel;
     private MainPanel mainPanel;
@@ -57,7 +58,7 @@ public class MainView extends JFrame{
         titleLabel = new JLabel("MEDIA SERVER");
         mainPanel = new MainPanel();
         sharePanel = new SharePanel();
-    
+        filesPanel = new FilesPanel();
         
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         add(titlePanel);
@@ -72,7 +73,7 @@ public class MainView extends JFrame{
         titleLabel.setFont(new Font("Times New Roman", Font.ITALIC, 50));
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
          
-        control = new Controller(this,mainPanel,sharePanel);
+        control = new Controller(this,mainPanel,sharePanel,filesPanel);
         
     }
     
