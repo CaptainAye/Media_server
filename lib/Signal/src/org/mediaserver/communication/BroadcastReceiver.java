@@ -33,8 +33,8 @@ public class BroadcastReceiver implements Runnable {
             System.out.println("Listening for packets");
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             socket.receive(receivePacket);
-            ByteArrayInputStream baos = new ByteArrayInputStream(receiveData);
-            ObjectInputStream oos = new ObjectInputStream(baos);
+            ByteArrayInputStream bais = new ByteArrayInputStream(receiveData);
+            ObjectInputStream oos = new ObjectInputStream(bais);
             signal =(Signalizable) oos.readObject();
             SignalQueue.getSignalQueue().enqueue(new QueuePacket(null,signal));
         }

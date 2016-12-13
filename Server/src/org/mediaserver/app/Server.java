@@ -12,9 +12,12 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import org.mediaserver.communication.ContentSender;
 import org.mediaserver.communication.ServerReceiver;
 import org.mediaserver.communication.SignalBroadcaster;
 import org.mediaserver.communication.SignalParser;
@@ -91,6 +94,8 @@ public class Server {
         }*/
     } 
     public static void main(String[] args) {
+        //Path file = Paths.get("E:\\Filmy\\Skyfall\\Skyfall.mp4");
+        //ContentSender.send("192.168.0.115", 25000, file);
         Server instance = new Server();
         
     }

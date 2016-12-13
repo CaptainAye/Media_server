@@ -21,18 +21,20 @@ public class AccessRequestSignalCommand implements Command{
     
     public void execute(QueuePacket data, Integer callerId){
         System.out.println("Access request received");
-        try{
+        /*try{
             Thread.sleep(5000);
         } catch(InterruptedException e){
                 e.printStackTrace();
-                }
+                }*/
         //TODO Send information signal when no id is set for client
         Integer clientId = data.getSignal().getId();
         try{
         if(ServerSideClientList.getClientList().clientExists(clientId)){
+            System.out.println("Server sent AccessGrantedSignal");
             DedicatedSender.getSender().send(data.getSocket(), new AccessGrantedSignal(callerId));
         }
         else{
+            System.out.println("Server sent GetFilesRequestSignal");
             DedicatedSender.getSender().send(data.getSocket(), new GetFilesRequestSignal(callerId));
         }
         } catch (IOException e){

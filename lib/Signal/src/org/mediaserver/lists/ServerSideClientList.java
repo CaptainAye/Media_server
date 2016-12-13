@@ -41,8 +41,8 @@ public class ServerSideClientList implements Serializable {
     
     
     private String serializeFileName = "ClientList.ser";
-    private List<Client> list = new ArrayList<Client>();
-    private static ServerSideClientList instance = new ServerSideClientList();
+    private List<Client> list;
+    private static ServerSideClientList instance;
     
     private void readClientList(){
         try{
@@ -50,15 +50,27 @@ public class ServerSideClientList implements Serializable {
             ObjectInputStream deserializedList = new ObjectInputStream(listFile);
             list = (ArrayList<Client>) deserializedList.readObject();
         } catch ( IOException | ClassNotFoundException e){
-            e.printStackTrace();
-            instance = new ServerSideClientList(); 
+            try{
+                FileOutputStream fileStream = new FileOutputStream(serializeFileName);
+                ObjectOutputStream writeStream = new ObjectOutputStream(fileStream);
+                writeStream.writeObject(list);
+                
+            } catch (IOException  exc){
+                exc.printStackTrace();
+            }
         }
     }
     
     private ServerSideClientList () {
-        readClientList();
+            list = new ArrayList<Client>();
+        
     }
     public static ServerSideClientList getClientList(){
+        if (instance == null){
+            instance = new ServerSideClientList();
+            instance.readClientList();
+        }
+
         return instance;
     }
     

@@ -31,6 +31,7 @@ import javax.swing.ListCellRenderer;
 import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.lists.ClientSideServerList;
 import org.mediaserver.communication.FileSearcher;
+import org.mediaserver.communication.SignalReceiver;
 import org.mediaserver.signals.AccessRequestSignal;
 /**
  *
@@ -58,7 +59,9 @@ public class Controller {
         @Override
         public void actionPerformed(ActionEvent evt) {
             try{
-                DedicatedSender.getSender().send(new Socket(getIpFromComboBox(),getPortFromComboBox()), new AccessRequestSignal(Client.getId()));
+                Socket socket = new Socket(getIpFromComboBox(),getPortFromComboBox());
+                SignalReceiver.getSignalReceiver().connectSocket(socket);
+                DedicatedSender.getSender().send(socket, new AccessRequestSignal(Client.getId()));
             } catch (IOException e){
                 e.printStackTrace();
         }
@@ -138,13 +141,14 @@ public class Controller {
         serverlist = mainPanel.getJComboBox();
         String temp = serverlist.getSelectedItem().toString();
         String[] parts = temp.split(" ip: ");
-        return parts[1];
+        parts = parts[1].split(" port:");
+        return parts[0];
     }
     
     public Integer getPortFromComboBox(){
         serverlist = mainPanel.getJComboBox();
         String temp = serverlist.getSelectedItem().toString();
-        String[] parts = temp.split(" port: ");
+        String[] parts = temp.split(" port:");
         System.out.println(parts[1]);
         String str_id = parts[1].substring(parts[1].lastIndexOf(":")+1);
         return Integer.parseInt(str_id);
@@ -167,7 +171,7 @@ public class Controller {
         String ip = parts[1];
         String str_id = parts[0].substring(parts[0].lastIndexOf(":")+1);
         int id = Integer.parseInt(str_id);
-        ClientSideServerList.getClientSideServerList().addServerToList(ip,id,10502);
+        ClientSideServerList.getClientSideServerList().addServerToList(ip,10502,id);
     }
     
     public void searchFiles(){

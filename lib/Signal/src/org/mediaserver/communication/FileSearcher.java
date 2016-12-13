@@ -13,13 +13,14 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
+import org.mediaserver.files.FileType;
 
 /**
  *
  * @author Tomek
  */
 public class FileSearcher {
-   private static final String EXTENSIONS = ".avi;.jpg;.mp3";
+   private static final String EXTENSIONS = FileType.getExtensions();//".avi;.jpg;.mp3";
    private static final HashMap<Path,String> FILES_MAP = new HashMap<Path,String>();
    
    private FileSearcher(){};

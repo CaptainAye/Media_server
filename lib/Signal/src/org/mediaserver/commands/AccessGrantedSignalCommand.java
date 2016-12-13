@@ -14,7 +14,7 @@ import org.mediaserver.interfaces.Command;
  */
 public class AccessGrantedSignalCommand implements Command {
     
-    public void execute(QueuePacket data, Integer id){
+    public void execute(QueuePacket data, Integer callerId){
         
     }
     
