@@ -5,7 +5,13 @@
  */
 package client;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import org.mediaserver.communication.BroadcastReceiver;
 import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.communication.ServerReceiver;
@@ -18,7 +24,11 @@ import org.mediaserver.signals.BroadcastSignal;
  *
  * @author Tomek
  */
+
+
 public class Client {
+    
+     private static HashMap<Path,String> sharedFilesFromServer;
 
     /**
      * @param args the command line arguments
@@ -34,9 +44,16 @@ public class Client {
         parserThread.start();
         Thread serverReceiverThread = new Thread(receiver);
         serverReceiverThread.start();
+        sharedFilesFromServer = new HashMap<>();
     }
     public static Integer getId(){
         return clientId;
+    }
+    public static void addSharedFiles(HashMap<Path,String> newSharedFiles){
+        sharedFilesFromServer.putAll(newSharedFiles);
+    }
+    public static HashMap<Path,String> getSharedFilesFromServer(){
+        return sharedFilesFromServer;
     }
     
 }

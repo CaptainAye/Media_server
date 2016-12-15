@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.ListCellRenderer;
@@ -32,6 +34,7 @@ import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.lists.ClientSideServerList;
 import org.mediaserver.communication.FileSearcher;
 import org.mediaserver.communication.SignalReceiver;
+import org.mediaserver.exceptions.ServerNotFoundException;
 import org.mediaserver.signals.AccessRequestSignal;
 /**
  *
@@ -72,7 +75,7 @@ public class Controller {
             
             //Tibo
             //dodanie servera do listy subsrybowanych serwerów
-            addServerToList();
+            //addServerToList();
             //Client.addToSubServerList(serverlist.getSelectedItem().toString());
             
             Thread updateListThread = new Thread(new SharePanel.UpdateFilesList());
@@ -111,7 +114,18 @@ public class Controller {
                 mainView.getContentPane().revalidate();
                 mainView.getContentPane().repaint();
                 
+                 //Dodanie servera do subkrybowanych //TIBO
+                try {
+                    addServerToList(selectedFilesMap);
+                } catch (ServerNotFoundException ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                
                 Set entries = selectedFilesMap.entrySet();
+                
+                //Client.addSharedFiles(selectedFilesMap);
+                
                 Iterator entriesIterator = entries.iterator();
                 ArrayList<String> values = new ArrayList<String>(selectedFilesMap.size());
                
@@ -133,6 +147,36 @@ public class Controller {
                                     break;
                     }
                 }
+                
+                //dodawanie do listy wyświetlanych pliki z serverta ////////////////////////////////////////////////////////
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+                if(!Client.getSharedFilesFromServer().isEmpty()){
+                    entries = Client.getSharedFilesFromServer().entrySet();
+                    entriesIterator = entries.iterator();
+                    values = new ArrayList<String>(Client.getSharedFilesFromServer().size());
+                    i = 0;
+                    while(entriesIterator.hasNext()){
+                        System.out.println("Downloading file from server");
+                        Map.Entry mapping = (Map.Entry) entriesIterator.next();
+                        values.add(i,mapping.getValue().toString());
+                    
+                        String temp = values.get(i);
+                        String[] parts = temp.split("\\.(?=[^\\.]+$)");
+                    
+                        switch(parts[1])
+                        {
+                            case "mp3": filesPanel.getMusicModel().addElement(temp);
+                                    break;
+                            case "avi": filesPanel.getVideoModel().addElement(temp);
+                                    break;
+                            case "jpg": filesPanel.getPhotoModel().addElement(temp);
+                                    break;
+                        }
+                    }
+                }
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+                
             }
         }
         );
@@ -161,7 +205,7 @@ public class Controller {
         
         return selectedList;
     }
-    public void addServerToList(){
+    public void addServerToList(HashMap<Path,String> wybranepliki) throws ServerNotFoundException{
         
         serverlist = mainPanel.getJComboBox();
         //Server id:1 ip: 127.0.0.1
@@ -171,7 +215,8 @@ public class Controller {
         String ip = parts[1];
         String str_id = parts[0].substring(parts[0].lastIndexOf(":")+1);
         int id = Integer.parseInt(str_id);
-        ClientSideServerList.getClientSideServerList().addServerToList(ip,10502,id);
+        //ClientSideServerList.getClientSideServerList().addServerToList(ip,10502,id);
+        ClientSideServerList.getClientSideServerList().setSubscribed(id, wybranepliki);
     }
     
     public void searchFiles(){
