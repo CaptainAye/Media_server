@@ -10,6 +10,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.nio.file.Path;
+import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -31,19 +34,19 @@ public class FilesPanel extends JTabbedPane{
     private final int width = 1024;
     private final int height = 668;
     
-    private JPanel musicPanel;
+    private JPanel audioPanel;
     private JPanel videoPanel;
-    private JPanel photoPanel;
-    private JLabel musicLabel;
+    private JPanel imagePanel;
+    private JLabel audioLabel;
     private JLabel videoLabel;
-    private JLabel photoLabel;
-    private JList musicList;
+    private JLabel imageLabel;
+    private JList audioList;
     private JList videoList;
-    private JList photoList;
+    private JList imageList;
     
-    private DefaultListModel musicModel;
+    private DefaultListModel audioModel;
     private DefaultListModel videoModel;
-    private DefaultListModel photoModel;
+    private DefaultListModel imageModel;
     
     
     FilesPanel(){
@@ -55,78 +58,93 @@ public class FilesPanel extends JTabbedPane{
         setMaximumSize(new Dimension(width,height));
         //setBorder(BorderFactory.createLineBorder(Color.gray));
         
-        musicPanel = new JPanel();
-        musicPanel.setMaximumSize(new Dimension(width, height-60));
-        musicPanel.setLayout(new BoxLayout(musicPanel, BoxLayout.Y_AXIS));
+        audioPanel = new JPanel();
+        audioPanel.setMaximumSize(new Dimension(width, height-60));
+        audioPanel.setLayout(new BoxLayout(audioPanel, BoxLayout.Y_AXIS));
         videoPanel = new JPanel();
         videoPanel.setMaximumSize(new Dimension(width, height-60));
         videoPanel.setLayout(new BoxLayout(videoPanel, BoxLayout.Y_AXIS));
-        photoPanel = new JPanel();
-        photoPanel.setMaximumSize(new Dimension(width, height-60));
-        photoPanel.setLayout(new BoxLayout(photoPanel, BoxLayout.Y_AXIS));
+        imagePanel = new JPanel();
+        imagePanel.setMaximumSize(new Dimension(width, height-60));
+        imagePanel.setLayout(new BoxLayout(imagePanel, BoxLayout.Y_AXIS));
 
-        musicModel = new DefaultListModel();
+        audioModel = new DefaultListModel();
         videoModel = new DefaultListModel();
-        photoModel = new DefaultListModel();
+        imageModel = new DefaultListModel();
         
-        musicList = new JList(musicModel);
-        musicList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        musicList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        musicList.setFont(new Font("Times New Roman", Font.PLAIN, 25));
+        audioList = new JList(audioModel);
+        audioList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        audioList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        audioList.setFont(new Font("Times New Roman", Font.PLAIN, 25));
         
         videoList = new JList(videoModel);
         videoList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         videoList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         videoList.setFont(new Font("Times New Roman", Font.PLAIN, 25));
         
-        photoList = new JList(photoModel);
-        photoList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        photoList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        photoList.setFont(new Font("Times New Roman", Font.PLAIN, 25));
+        imageList = new JList(imageModel);
+        imageList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        imageList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        imageList.setFont(new Font("Times New Roman", Font.PLAIN, 25));
         
         
-        musicLabel = new JLabel("MUZYKA",SwingConstants.CENTER);
-        musicLabel.setFont(new Font("Times New Roman", Font.PLAIN, 25));
-        musicLabel.setPreferredSize(new Dimension(305, 30));
+        audioLabel = new JLabel("MUZYKA",SwingConstants.CENTER);
+        audioLabel.setFont(new Font("Times New Roman", Font.PLAIN, 25));
+        audioLabel.setPreferredSize(new Dimension(305, 30));
         
         videoLabel = new JLabel("FILMY",SwingConstants.CENTER);
         videoLabel.setFont(new Font("Times New Roman", Font.PLAIN, 25));
         videoLabel.setPreferredSize(new Dimension(305, 30));
         
-        photoLabel = new JLabel("OBRAZY",SwingConstants.CENTER);
-        photoLabel.setFont(new Font("Times New Roman", Font.PLAIN, 25));
-        photoLabel.setPreferredSize(new Dimension(305, 30));
+        imageLabel = new JLabel("OBRAZY",SwingConstants.CENTER);
+        imageLabel.setFont(new Font("Times New Roman", Font.PLAIN, 25));
+        imageLabel.setPreferredSize(new Dimension(305, 30));
         
         
         
         
-        addTab("MUZYKA",musicPanel);
+        addTab("MUZYKA",audioPanel);
+        setTabComponentAt(0, audioLabel);
         setMnemonicAt(0, KeyEvent.VK_1);
-        setTabComponentAt(0, musicLabel);
         
         addTab("FILMY",videoPanel);
         setTabComponentAt(1, videoLabel);
         setMnemonicAt(1, KeyEvent.VK_2);
         
-        addTab("OBRAZY",photoPanel);
+        addTab("OBRAZY",imagePanel);
+        setTabComponentAt(2, imageLabel);
         setMnemonicAt(2, KeyEvent.VK_3);
-        setTabComponentAt(2, photoLabel);
         
-        musicPanel.add(new JScrollPane(musicList));
+        audioPanel.add(new JScrollPane(audioList));
         videoPanel.add(new JScrollPane(videoList));
-        photoPanel.add(new JScrollPane(photoList));
+        imagePanel.add(new JScrollPane(imageList));
         
         
     }
     
-    public DefaultListModel getMusicModel(){
-        return musicModel;
+    public void streamFile(MouseAdapter adapter) {
+        audioList.addMouseListener(adapter);
+        videoList.addMouseListener(adapter);
+        imageList.addMouseListener(adapter);
+    }
+    
+    public DefaultListModel getAudioModel(){
+        return audioModel;
     }
     public DefaultListModel getVideoModel(){
         return videoModel;
     }
-    public DefaultListModel getPhotoModel(){
-        return photoModel;
+    public DefaultListModel getImageModel(){
+        return imageModel;
+    }
+    public JList getAudioList(){
+        return audioList;
+    }
+    public JList getVideoList(){
+        return videoList;
+    }
+    public JList getImageList(){
+        return imageList;
     }
     
 }
