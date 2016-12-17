@@ -15,8 +15,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.mediaserver.files.FileType;
@@ -65,6 +68,41 @@ public class ContentSender {
             e.printStackTrace();
         }
     }
+    
+    private static void streamAudio(String remoteIp, Integer remotePort, Path file){
+        
+        File fileToSend = file.toFile();
+        byte [] data = new byte[1024];
+        DatagramSocket socket = null;
+        int count = 0;
+        
+        try{
+       FileInputStream fileStream = new FileInputStream(fileToSend);
+            socket = new DatagramSocket();
+            while (count != -1){
+                System.out.println("Sending next count: " + count + "bytes");
+                count = fileStream.read(data);
+                DatagramPacket packetToSend = new DatagramPacket(data,data.length,InetAddress.getByName(remoteIp),remotePort);
+                socket.send(packetToSend);
+            }
+        } catch (SocketException e){
+            e.printStackTrace();
+        } catch (FileNotFoundException e){
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            socket.close();
+        }
+        
+    }
+    
+    private static void streamImage(String remoteIp, Integer remotePort, Path file){
+        
+        
+        
+    }
+    
     public static void send(String remoteIp, Integer remotePort, Path file){
         FileType fileType = FileType.getFileType(file);
         switch (fileType){
@@ -72,28 +110,14 @@ public class ContentSender {
                 streamVideo(remoteIp, remotePort, file);
                 break;
             case AUDIO:
+                streamAudio(remoteIp, remotePort, file);
                 break;
+                
             case IMAGE:
+                streamImage(remoteIp, remotePort, file);
                 break;
             
         }
-       /* File fileToSend = file.toFile();
-        byte[] data = new byte[4096];
-        int count = 0;
-        try{
-            FileInputStream fileStream = new FileInputStream(fileToSend);
-            DatagramSocket socket = new DatagramSocket();
-            while (count != -1){
-                System.out.println("Sending next count: " + count + "bytes");
-                count = fileStream.read(data);
-                DatagramPacket packetToSend = new DatagramPacket(data,data.length,InetAddress.getByName(remoteIp),remotePort);
-                socket.send(packetToSend);
-            }
-        } catch(FileNotFoundException e){
-            e.printStackTrace();
-        } catch (IOException e){
-            e.printStackTrace();
-        }*/
             
     }
 }
