@@ -11,6 +11,10 @@ import org.mediaserver.commands.AccessRequestSignalCommand;
 import org.mediaserver.commands.GetFilesResponseSignalCommand;
 import org.mediaserver.commands.BroadcastSignalCommand;
 import org.mediaserver.commands.GetFilesRequestSignalCommand;
+import org.mediaserver.commands.StreamRequestFromClientCommand;
+import org.mediaserver.commands.StreamRequestFromServerCommand;
+import org.mediaserver.commands.StreamResponseFromClientCommand;
+import org.mediaserver.commands.StreamResponseFromServerCommand;
 import org.mediaserver.exceptions.KeyNotFoundException;
 import org.mediaserver.exceptions.NotASignalizableTypeException;
 import org.mediaserver.interfaces.Command;
@@ -19,6 +23,10 @@ import org.mediaserver.signals.AccessRequestSignal;
 import org.mediaserver.signals.GetFilesResponseSignal;
 import org.mediaserver.signals.BroadcastSignal;
 import org.mediaserver.signals.GetFilesRequestSignal;
+import org.mediaserver.signals.StreamRequestFromClientSignal;
+import org.mediaserver.signals.StreamRequestFromServerSignal;
+import org.mediaserver.signals.StreamResponseFromClientSignal;
+import org.mediaserver.signals.StreamResponseFromServerSignal;
 
 /**
  *
@@ -65,6 +73,10 @@ public class SignalParser implements Runnable{
             register(GetFilesResponseSignal.class, new GetFilesResponseSignalCommand());
             register(AccessGrantedSignal.class, new AccessGrantedSignalCommand());
             register(GetFilesRequestSignal.class,new GetFilesRequestSignalCommand());
+            register(StreamRequestFromClientSignal.class,new StreamRequestFromClientCommand());
+            register(StreamRequestFromServerSignal.class, new StreamRequestFromServerCommand());
+            register(StreamResponseFromClientSignal.class, new StreamResponseFromClientCommand());
+            register(StreamResponseFromServerSignal.class, new StreamResponseFromServerCommand());
             //REGISTER YOUR SIGNALS
             
         } catch (NotASignalizableTypeException e){

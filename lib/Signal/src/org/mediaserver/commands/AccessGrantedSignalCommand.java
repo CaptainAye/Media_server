@@ -5,8 +5,13 @@
  */
 package org.mediaserver.commands;
 
+import java.io.IOException;
+import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.communication.QueuePacket;
 import org.mediaserver.interfaces.Command;
+import org.mediaserver.lists.ServerSideClientList;
+import org.mediaserver.signals.AccessGrantedSignal;
+import org.mediaserver.signals.GetFilesRequestSignal;
 
 /**
  *
