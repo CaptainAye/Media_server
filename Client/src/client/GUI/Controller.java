@@ -208,9 +208,9 @@ public class Controller {
                     //wysłanie StreamListenSignal
                     try{
                         Socket socket = new Socket(getIpFromComboBox(),getPortFromComboBox());
+                        SignalReceiver.getSignalReceiver().connectSocket(socket);
                         DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
-
-                        //ContentSender.send(getIpFromComboBox(), socket.getPort(), audioMap.get(0));
+                        
                     }
                     catch (IOException e){
                         e.printStackTrace();
@@ -227,10 +227,9 @@ public class Controller {
                     //wysłanie StreamListenSignal
                     try{
                         Socket socket = new Socket(getIpFromComboBox(),getPortFromComboBox());
+                        SignalReceiver.getSignalReceiver().connectSocket(socket);
                         DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
-
                         //ContentSender.send(getIpFromComboBox(), socket.getPort(), videoMap.get(0));
-                        //ContentSender.send(socket.getInetAddress(), socket.getPort(), videoMap.get(0));
                     }
                     catch (IOException e){
                         e.printStackTrace();
@@ -247,9 +246,9 @@ public class Controller {
                     //wysłanie StreamListenSignal
                     try{
                         Socket socket = new Socket(getIpFromComboBox(),getPortFromComboBox());
+                        SignalReceiver.getSignalReceiver().connectSocket(socket);
                         DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
 
-                        //ContentSender.send(getIpFromComboBox(), socket.getPort(), imageMap.get(0));
                     }
                     catch (IOException e){
                         e.printStackTrace();
