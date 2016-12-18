@@ -18,7 +18,8 @@ public class AccessGrantedSignal extends Signalizable{
     public AccessGrantedSignal(Integer id){
         setId(id);
     }
-    
-    
-    
+    //tibo
+    public HashMap<Path,String> getIndexedFilesMap(){
+        return indexedFilesMap;
+    }
 }

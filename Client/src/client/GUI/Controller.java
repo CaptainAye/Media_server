@@ -31,13 +31,16 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.ListCellRenderer;
 import org.mediaserver.communication.ContentSender;
+import org.mediaserver.communication.DedicatedReceiver;
 import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.lists.ClientSideServerList;
 import org.mediaserver.communication.FileSearcher;
 import org.mediaserver.communication.SignalReceiver;
 import org.mediaserver.exceptions.ServerNotFoundException;
 import org.mediaserver.signals.AccessRequestSignal;
+import org.mediaserver.signals.GetFilesRequestSignal;
 import org.mediaserver.signals.StreamRequestFromClientSignal;
+import org.mediaserver.signals.GetFilesResponseSignal;
 /**
  *
  * @author Natalia
@@ -76,11 +79,6 @@ public class Controller {
             mainView.getContentPane().add(panel2);
             mainView.getContentPane().revalidate();
             mainView.getContentPane().repaint();
-            
-            //Tibo
-            //dodanie servera do listy subsrybowanych serwerów
-            //addServerToList();
-            //Client.addToSubServerList(serverlist.getSelectedItem().toString());
             
             Thread updateListThread = new Thread(new SharePanel.UpdateFilesList());
             updateListThread.start();
@@ -121,8 +119,8 @@ public class Controller {
                  //Dodanie servera do subkrybowanych //TIBO
                 try {
                     addServerToList(selectedFilesMap);
-                } catch (ServerNotFoundException ex) {
-                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ServerNotFoundException e) {
+                    e.printStackTrace();
                 }
                 
                 //Client.addSharedFiles(selectedFilesMap);
@@ -158,35 +156,44 @@ public class Controller {
                     }
                 }
                 
-                //dodawanie do listy wyświetlanych pliki z serverta ////////////////////////////////////////////////////////
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-                /*if(!Client.getSharedFilesFromServer().isEmpty()){
+               
+                try {
+                    Socket socket = new Socket(getIpFromComboBox(),getPortFromComboBox());
+                    SignalReceiver.getSignalReceiver().connectSocket(socket);
+                    DedicatedSender.getSender().send(socket, new GetFilesRequestSignal(Client.getId()));
+                    
+                    //dodawanie do listy wyświetlanych pliki z serverta ////////////////////////////////////////////////////////
+                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    if(!Client.getSharedFilesFromServer().isEmpty()){
                     entries = Client.getSharedFilesFromServer().entrySet();
                     entriesIterator = entries.iterator();
                     values = new ArrayList<String>(Client.getSharedFilesFromServer().size());
                     i = 0;
                     while(entriesIterator.hasNext()){
-                        System.out.println("Downloading file from server");
-                        Map.Entry mapping = (Map.Entry) entriesIterator.next();
-                        values.add(i,mapping.getValue().toString());
+                    System.out.println("Downloading file from server");
+                    Map.Entry mapping = (Map.Entry) entriesIterator.next();
+                    values.add(i,mapping.getValue().toString());
                     
-                        String temp = values.get(i);
-                        String[] parts = temp.split("\\.(?=[^\\.]+$)");
+                    String temp = values.get(i);
+                    String[] parts = temp.split("\\.(?=[^\\.]+$)");
                     
-                        switch(parts[1])
-                        {
-                            case "mp3": filesPanel.getAudioModel().addElement(temp);
-                                    break;
-                            case "avi": filesPanel.getVideoModel().addElement(temp);
-                                    break;
-                            case "jpg": filesPanel.getImageModel().addElement(temp);
-                                    break;
-                        }
+                    switch(parts[1])
+                    {
+                    case "mp3": filesPanel.getAudioModel().addElement(temp);
+                    break;
+                    case "avi": filesPanel.getVideoModel().addElement(temp);
+                    break;
+                    case "jpg": filesPanel.getImageModel().addElement(temp);
+                    break;
                     }
+                    }
+                    }
+                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    
+                } catch (IOException e) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, e);
                 }
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-                */
             }
         }
         );

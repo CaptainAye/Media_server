@@ -49,8 +49,11 @@ public class Client {
     public static Integer getId(){
         return clientId;
     }
-    public static void addSharedFiles(HashMap<Path,String> newSharedFiles){
-        sharedFilesFromServer.putAll(newSharedFiles);
+    
+    public static void addSharedFiles(int myId, HashMap<Path,String> newSharedFiles){
+        if(clientId == myId){
+            sharedFilesFromServer.putAll(newSharedFiles);
+        }
     }
     public static HashMap<Path,String> getSharedFilesFromServer(){
         return sharedFilesFromServer;
