@@ -53,6 +53,7 @@ public class MainView extends JFrame{
         
         setSize(width,height);
         setTitle("Projekt zespołowy");
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         
         titlePanel = new JPanel();
         titleLabel = new JLabel("MEDIA SERVER");
@@ -60,7 +61,6 @@ public class MainView extends JFrame{
         sharePanel = new SharePanel();
         filesPanel = new FilesPanel();
         
-        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         add(titlePanel);
         add(mainPanel);
         
@@ -86,6 +86,11 @@ public class MainView extends JFrame{
                 mainView.setVisible(true);
                 mainView.setDefaultCloseOperation(MainView.EXIT_ON_CLOSE);
                 Client client = new Client();
+                
+                StreamView streamView = new StreamView();
+                streamView.setLocationRelativeTo(null);
+                streamView.setVisible(true);
+                streamView.setDefaultCloseOperation(MainView.EXIT_ON_CLOSE);
                          
             }
         });

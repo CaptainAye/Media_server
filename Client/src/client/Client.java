@@ -28,7 +28,7 @@ import org.mediaserver.signals.BroadcastSignal;
 
 public class Client {
     
-     private static HashMap<Path,String> sharedFilesFromServer;
+     private static HashMap<Path,Integer> sharedFilesFromServer;
 
     /**
      * @param args the command line arguments
@@ -50,12 +50,12 @@ public class Client {
         return clientId;
     }
     
-    public static void addSharedFiles(int myId, HashMap<Path,String> newSharedFiles){
+    public static void addSharedFiles(int myId, HashMap<Path,Integer> newSharedFiles){
         if(clientId == myId){
             sharedFilesFromServer.putAll(newSharedFiles);
         }
     }
-    public static HashMap<Path,String> getSharedFilesFromServer(){
+    public static HashMap<Path,Integer> getSharedFilesFromServer(){
         return sharedFilesFromServer;
     }
     
