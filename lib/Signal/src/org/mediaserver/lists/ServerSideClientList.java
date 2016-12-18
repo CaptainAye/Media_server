@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -119,5 +120,15 @@ public class ServerSideClientList implements Serializable {
             System.err.println("Could not serialize to ClientList.ser");
             System.exit(-1);
            }
+    }
+    public HashMap<Path,Integer> getMap(){
+        HashMap<Path, Integer> filesDB = new HashMap<Path,Integer>();
+        for(Client client : list){
+            Set<Path> keySet = client.filesMap.keySet();
+            for (Path filePath : keySet){
+                filesDB.put(filePath, client.getId());
+            }
+        }
+        return filesDB;
     }
 }

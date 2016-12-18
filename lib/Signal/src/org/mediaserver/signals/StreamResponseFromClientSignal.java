@@ -5,10 +5,12 @@
  */
 package org.mediaserver.signals;
 
+import org.mediaserver.interfaces.Signalizable;
+
 /**
  *
  * @author Tomek
  */
-public class StreamResponseFromClientSignal {
+public class StreamResponseFromClientSignal extends Signalizable {
     
 }

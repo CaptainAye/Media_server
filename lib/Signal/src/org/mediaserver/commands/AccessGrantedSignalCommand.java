@@ -23,7 +23,7 @@ import client.Client;
  */
 public class AccessGrantedSignalCommand implements Command {
     
-    private HashMap<Path,String> indexedFilesMap;
+    private HashMap<Path,Integer> indexedFilesMap;
   
     public void execute(QueuePacket data, Integer callerId){
         

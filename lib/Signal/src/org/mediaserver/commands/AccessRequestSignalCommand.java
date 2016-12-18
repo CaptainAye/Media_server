@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.communication.QueuePacket;
 import org.mediaserver.interfaces.Command;
+import org.mediaserver.lists.ClientSideServerList;
 import org.mediaserver.lists.ServerSideClientList;
 import org.mediaserver.signals.AccessGrantedSignal;
 import org.mediaserver.signals.GetFilesRequestSignal;
@@ -31,7 +32,7 @@ public class AccessRequestSignalCommand implements Command{
         try{
         if(ServerSideClientList.getClientList().clientExists(clientId)){
             System.out.println("Server sent AccessGrantedSignal");
-            DedicatedSender.getSender().send(data.getSocket(), new AccessGrantedSignal(callerId));
+            DedicatedSender.getSender().send(data.getSocket(), new AccessGrantedSignal(callerId,ServerSideClientList.getClientList().getMap()));
         }
         else{
             System.out.println("Server sent GetFilesRequestSignal");

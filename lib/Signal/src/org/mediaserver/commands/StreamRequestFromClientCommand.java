@@ -13,8 +13,11 @@ import org.mediaserver.interfaces.Command;
  * @author Natalia
  */
 public class StreamRequestFromClientCommand implements Command{
+    
+    //private void handleStream()
+    
     public void execute(QueuePacket data, Integer callerId) {
-        //System.out.println("StreamRequestFromClientSignal sended");
+        
     }
     
 }

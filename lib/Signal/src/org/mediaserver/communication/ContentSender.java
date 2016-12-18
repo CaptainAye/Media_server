@@ -33,7 +33,7 @@ public class ContentSender {
     
     private static List<Integer> portList = new ArrayList<Integer>(49151);
  
-    private static String formatRtspStream(String serverAddress, int serverPort, String id) {
+    private static String formatRtspStream( int serverPort, String id) {
         StringBuilder sb = new StringBuilder(60);
         sb.append(":sout=#rtp{sdp=rtsp://");
         //sb.append(serverAddress);
@@ -49,9 +49,34 @@ public class ContentSender {
         return "file:///" + file.toString();
     }
     
-    private static void streamVideo(String remoteIp, Integer remotePort, Path file){
+    private static String buildMRL (String forwardIp, Integer forwardPort, Path file){
+        return "rtsp:///" + forwardIp + ":" + forwardPort + "/" + file.getFileName().toString();
+    }
+    
+    public static void streamForwardVideo(String remoteIp, Integer remotePort, Path file )
+    {
+        String media = buildMRL(remoteIp,remotePort,file);
+        String options = formatRtspStream(remotePort,file.getFileName().toString());
+        NativeLibrary.addSearchPath("libvlc", "E:\\Programy\\VLC-64bit");
+        MediaPlayerFactory mediaPlayerFactory = new MediaPlayerFactory();
+        HeadlessMediaPlayer mediaPlayer = mediaPlayerFactory.newHeadlessMediaPlayer();
+        mediaPlayer.playMedia(media,
+            options,
+            ":no-sout-rtp-sap",
+            ":no-sout-standard-sap",
+            ":sout-all",
+            ":sout-keep"
+        );
+        try{
+        Thread.currentThread().join();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+    }
+    
+    private static void streamVideo( Integer remotePort, Path file){
         String media = buildMRL(file);
-        String options = formatRtspStream(remoteIp, remotePort,file.getFileName().toString());
+        String options = formatRtspStream(remotePort,file.getFileName().toString());
         NativeLibrary.addSearchPath("libvlc", "E:\\Programy\\VLC-64bit");
         MediaPlayerFactory mediaPlayerFactory = new MediaPlayerFactory();
         HeadlessMediaPlayer mediaPlayer = mediaPlayerFactory.newHeadlessMediaPlayer();
@@ -107,7 +132,7 @@ public class ContentSender {
         FileType fileType = FileType.getFileType(file);
         switch (fileType){
             case VIDEO:
-                streamVideo(remoteIp, remotePort, file);
+                streamVideo( remotePort, file);
                 break;
             case AUDIO:
                 streamAudio(remoteIp, remotePort, file);

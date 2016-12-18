@@ -13,13 +13,14 @@ import org.mediaserver.interfaces.Signalizable;
  */
 public class AccessGrantedSignal extends Signalizable{
     
-    private HashMap<Path,String> indexedFilesMap;
+    private HashMap<Path,Integer> indexedFilesMap;
     
-    public AccessGrantedSignal(Integer id){
+    public AccessGrantedSignal(Integer id, HashMap<Path,Integer> map){
         setId(id);
+        indexedFilesMap = map;
     }
     //tibo
-    public HashMap<Path,String> getIndexedFilesMap(){
+    public HashMap<Path,Integer> getIndexedFilesMap(){
         return indexedFilesMap;
     }
 }

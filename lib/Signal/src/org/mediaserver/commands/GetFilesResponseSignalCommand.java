@@ -6,6 +6,8 @@
 package org.mediaserver.commands;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.HashMap;
 import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.communication.QueuePacket;
 import org.mediaserver.interfaces.Command;
@@ -26,6 +28,7 @@ public class GetFilesResponseSignalCommand implements Command {
         }
         return false;
     }
+    
     //przesyłanie drzewa z kompa klienta
     public void execute(QueuePacket data,Integer callerId) {
         signal =(GetFilesResponseSignal) data.getSignal();
@@ -36,8 +39,10 @@ public class GetFilesResponseSignalCommand implements Command {
             if (!clientList.clientExists(clientId)){
                 clientList.addToList(signal.getFilesToIndex(), clientId);
             }
+            
+            HashMap<Path,Integer> mapToSend = ServerSideClientList.getClientList().getMap();
             try{
-            DedicatedSender.getSender().send(data.getSocket(), new AccessGrantedSignal(callerId));
+            DedicatedSender.getSender().send(data.getSocket(), new AccessGrantedSignal(callerId,mapToSend));
             } catch(IOException e){
                 e.printStackTrace();
             }

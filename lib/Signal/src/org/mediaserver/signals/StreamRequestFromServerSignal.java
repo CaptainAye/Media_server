@@ -15,7 +15,6 @@ import org.mediaserver.interfaces.Signalizable;
  */
 public class StreamRequestFromServerSignal extends Signalizable {
     private Path streamFile;
-    private DatagramSocket socket;
     
     public StreamRequestFromServerSignal(Integer requestorId){
         setId(requestorId);
@@ -27,13 +26,5 @@ public class StreamRequestFromServerSignal extends Signalizable {
     
     public Path getPath(){
         return streamFile;
-    }
-    
-        public void setSocket(DatagramSocket socket){
-        this.socket = socket;
-    }
-    
-    public DatagramSocket getSocket(){
-        return socket;
     }
 }
