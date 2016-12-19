@@ -24,6 +24,7 @@ import client.Client;
 public class AccessGrantedSignalCommand implements Command {
     
     private HashMap<Path,Integer> indexedFilesMap;
+    private HashMap<Path,String> namedFilesMap;
   
     public void execute(QueuePacket data, Integer callerId){
         
@@ -34,9 +35,8 @@ public class AccessGrantedSignalCommand implements Command {
         indexedFilesMap = accessgranted.getIndexedFilesMap();
         
         //GetFilesResponseSignal getFileResponse = (GetFilesResponseSignal) data.getSignal();
-        
         //getFileResponse.setFilesForIndexing(accessgranted.getIndexedFilesMap());
-        
+        //ServerSideClientList.getClientList().getMap();
         Client.addSharedFiles(clientID, indexedFilesMap);
                 
     }

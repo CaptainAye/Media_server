@@ -96,7 +96,7 @@ public class Server {
     public static void main(String[] args) {
         Path file = Paths.get("Zwierzogrod.avi");
         //ContentSender.send("192.168.0.115", 25000, file);
-        ContentSender.streamForwardVideo("192.168.0.115", 8555, file );
+        //ContentSender.streamForwardVideo("192.168.0.115", 8555, file );
         Server instance = new Server();
         
     }
