@@ -131,9 +131,7 @@ public class Controller {
                     //Wybrane pliki są wysyłane na server
                     Socket socket = new Socket(getIpFromComboBox(),getPortFromComboBox());
                     SignalReceiver.getSignalReceiver().connectSocket(socket);
-                    GetFilesResponseSignal getFileResponseSignal = new GetFilesResponseSignal(Client.getId());
-                    DedicatedSender.getSender().send(socket, getFileResponseSignal );
-                    getFileResponseSignal.setFilesForIndexing(selectedFilesMap);
+                    DedicatedSender.getSender().send(socket, new GetFilesResponseSignal(Client.getId(),selectedFilesMap));
                     
                 } catch (IOException e){
                     e.printStackTrace();
