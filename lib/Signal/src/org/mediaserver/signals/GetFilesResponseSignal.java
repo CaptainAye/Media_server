@@ -15,9 +15,10 @@ import org.mediaserver.interfaces.Signalizable;
  */
 public class GetFilesResponseSignal extends Signalizable{
     private HashMap<Path,String> map;
-    public GetFilesResponseSignal (Integer id)
+    public GetFilesResponseSignal (Integer id, HashMap<Path,String> map)
     {
         setId(id);
+        this.map = map;
     }
     
     public void setFilesForIndexing(HashMap<Path,String> map){
