@@ -14,7 +14,7 @@ import org.mediaserver.interfaces.Signalizable;
  * @author Natalka
  */
 public class GetFilesResponseSignal extends Signalizable{
-    private HashMap<Path,String> map;
+    private transient HashMap<Path,String> map;
     public GetFilesResponseSignal (Integer id, HashMap<Path,String> map)
     {
         setId(id);

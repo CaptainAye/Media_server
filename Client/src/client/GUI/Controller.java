@@ -53,11 +53,13 @@ public class Controller {
     private SharePanel sharePanel;
     private FilesPanel filesPanel;
     private JComboBox serverlist;
-    private static HashMap<Path,String> selectedFilesMap;
+    private transient HashMap<Path,String> selectedFilesMap;
     private ArrayList<Path> audioMap;
     private ArrayList<Path> videoMap;
     private ArrayList<Path> imageMap;
-   
+    private String ipFromCombobox;
+    private int portFromCombobox;
+    private transient Socket socket;
     
     public Controller(MainView mainView, Component panel1, Component panel2, Component panel3){
         this.mainView = mainView;
@@ -71,7 +73,9 @@ public class Controller {
         public void actionPerformed(ActionEvent evt) {
             serverlist = (JComboBox) mainPanel.getJComboBox();
             try{
-                Socket socket = new Socket(getIpFromComboBox(),getPortFromComboBox());
+                ipFromCombobox = getIpFromComboBox();
+                portFromCombobox = getPortFromComboBox();
+                socket = new Socket(ipFromCombobox, portFromCombobox );
                 SignalReceiver.getSignalReceiver().connectSocket(socket);
                 DedicatedSender.getSender().send(socket, new AccessRequestSignal(Client.getId()));
             } catch (IOException e){
@@ -128,10 +132,14 @@ public class Controller {
                 }
                 
                  try{
-                    //Wybrane pliki są wysyłane na server
-                    Socket socket = new Socket(getIpFromComboBox(),getPortFromComboBox());
+                    //Wybrane pliki są wysyłane na server          
+                    System.out.println(ipFromCombobox);
+                    System.out.println(portFromCombobox);
+                    System.out.println(socket.toString());
+                    
                     SignalReceiver.getSignalReceiver().connectSocket(socket);
                     DedicatedSender.getSender().send(socket, new GetFilesResponseSignal(Client.getId(),selectedFilesMap));
+
                     
                 } catch (IOException e){
                     e.printStackTrace();
@@ -213,7 +221,7 @@ public class Controller {
                     //odebranie StreamAvailableSignal
                     //wysłanie StreamListenSignal
                     try{
-                        Socket socket = new Socket(getIpFromComboBox(),getPortFromComboBox());
+                        //Socket socket = new Socket(ipFromCombobox,portFromCombobox);
                         SignalReceiver.getSignalReceiver().connectSocket(socket);
                         DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
                         

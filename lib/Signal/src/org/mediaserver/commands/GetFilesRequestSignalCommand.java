@@ -14,6 +14,7 @@ import org.mediaserver.interfaces.Command;
  */
 public class GetFilesRequestSignalCommand implements Command {
     public void execute(QueuePacket data, Integer callerId){
+        System.out.println("//////////////////////////////////////////////////////////////////////////////////////////////////");
         System.out.println("Get files request received");
         try{
             Thread.currentThread().sleep(10000);

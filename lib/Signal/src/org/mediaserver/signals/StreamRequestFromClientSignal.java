@@ -15,7 +15,7 @@ import org.mediaserver.interfaces.Signalizable;
 public class StreamRequestFromClientSignal extends Signalizable {
     private Path streamFile;
     
-    public StreamRequestFromClientSignal(Integer requestorId){
+    public StreamRequestFromClientSignal(Integer requestorId){   
         setId(requestorId);
     }
     

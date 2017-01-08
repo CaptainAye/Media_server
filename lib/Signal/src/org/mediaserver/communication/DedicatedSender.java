@@ -16,7 +16,11 @@ import org.mediaserver.interfaces.Signalizable;
  *
  * @author Tomek
  */
-public class DedicatedSender {
+public class DedicatedSender implements java.io.Serializable{
+    
+    //public ObjectOutputStream outputStream;
+  
+    
     private DedicatedSender() {
     }
     private static DedicatedSender send;
@@ -28,8 +32,11 @@ public class DedicatedSender {
     }
     public synchronized void send (Socket socket,Signalizable signal) throws IOException {
         if (socket == null || signal == null){
-            return;
-        }
+             return;
+        }    
+        System.out.println("****************************************************");
+        System.out.println(signal.toString());
+        
         ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
         outputStream.writeObject(signal);
         

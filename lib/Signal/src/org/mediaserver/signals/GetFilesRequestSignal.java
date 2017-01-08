@@ -15,6 +15,5 @@ public class GetFilesRequestSignal extends Signalizable {
     
     public GetFilesRequestSignal(Integer callerId){
         setId(callerId);
-    }
-    
+    }  
 }

@@ -19,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-
 //tibo
 import client.GUI.MainPanel;
 import java.awt.Toolkit;
@@ -28,7 +27,7 @@ import java.awt.Toolkit;
  *
  * @author Natalia
  */
-public class MainView extends JFrame{
+public class MainView extends JFrame implements java.io.Serializable{
     
     private Controller control;
     private FilesPanel filesPanel;
