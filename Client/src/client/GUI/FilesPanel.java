@@ -74,18 +74,15 @@ public class FilesPanel extends JTabbedPane{
         
         audioList = new JList(audioModel);
         audioList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        audioList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        audioList.setFont(new Font("Times New Roman", Font.PLAIN, 25));
+        audioList.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         
         videoList = new JList(videoModel);
         videoList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        videoList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        videoList.setFont(new Font("Times New Roman", Font.PLAIN, 25));
+        videoList.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         
         imageList = new JList(imageModel);
         imageList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        imageList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        imageList.setFont(new Font("Times New Roman", Font.PLAIN, 25));
+        imageList.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         
         
         audioLabel = new JLabel("MUZYKA",SwingConstants.CENTER);

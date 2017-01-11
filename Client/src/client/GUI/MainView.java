@@ -85,11 +85,6 @@ public class MainView extends JFrame implements java.io.Serializable{
                 mainView.setVisible(true);
                 mainView.setDefaultCloseOperation(MainView.EXIT_ON_CLOSE);
                 Client client = new Client();
-                
-                StreamView streamView = new StreamView();
-                streamView.setLocationRelativeTo(null);
-                streamView.setVisible(true);
-                streamView.setDefaultCloseOperation(MainView.EXIT_ON_CLOSE);
                          
             }
         });

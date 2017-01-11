@@ -11,11 +11,19 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -35,6 +43,7 @@ public class StreamView extends JFrame{
     
     private int height = 600;
     private int width = 800;
+    
     private DefaultListModel audioModel;
     private DefaultListModel imageModel;
     private DefaultListModel videoModel;
@@ -53,16 +62,17 @@ public class StreamView extends JFrame{
     private JLabel imageLabel;
     private JLabel videoLabel;
     
+    //private BufferedImage image;
+    
     
     public StreamView(){
         setSize(width,height);
-        setTitle("Stream");
-        //initAudioComponents();
-        initImageComponents();
+    }
+    public StreamView(int width, int height){
+        setSize(width,height);
     }
     
-    private void initAudioComponents() {
-        
+    void initAudioComponents() {
         audioPanel = new JPanel();
         audioPanel.setMaximumSize(new Dimension(width,height-100));
         audioPanel.setLayout(new BoxLayout(audioPanel, BoxLayout.Y_AXIS));
@@ -120,28 +130,23 @@ public class StreamView extends JFrame{
         
     }
     
-    private void initImageComponents(){
+    void initImageComponents(BufferedImage image, String imageName) throws IOException{
         imagePanel = new JPanel();
         imagePanel.setMaximumSize(new Dimension(width,height-100));
         imagePanel.setLayout(new BoxLayout(imagePanel, BoxLayout.Y_AXIS));
         
-        panelLabel = new JLabel("OBRAZY");
-        panelLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelLabel.setBackground(Color.lightGray);
-        panelLabel.setBorder(BorderFactory.createLineBorder(Color.gray));
-        panelLabel.setMaximumSize(new Dimension(width,100));
-        panelLabel.setFont(new Font("Times New Roman", Font.PLAIN, 50));
-        panelLabel.setHorizontalAlignment(JLabel.CENTER);
-        
-        title = new JLabel("TYTYŁ OBRAZU");
+        title = new JLabel(imageName);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         //audioTitle.setBorder(BorderFactory.createLineBorder(Color.gray));
-        title.setFont(new Font("Times New Roman", Font.PLAIN, 30));
+        title.setFont(new Font("Times New Roman", Font.PLAIN, 15));
         title.setHorizontalAlignment(JLabel.CENTER);
-        title.setMaximumSize(new Dimension(width,50));
+        title.setMaximumSize(new Dimension(width,20));
         
         imageView = new JPanel();
-        imageView.setMaximumSize(new Dimension(width,height-150));
+        JLabel picLabel = new JLabel(new ImageIcon(image));
+        imageView.setMaximumSize(new Dimension(image.getWidth(),image.getHeight()));
+        imageView.add(picLabel);
+        imageView.repaint(); 
         
         buttonNext = new JButton("NASTĘPNE");
         buttonNext.setFont(new Font("Times New Roman", Font.PLAIN, 20));
@@ -156,15 +161,10 @@ public class StreamView extends JFrame{
         imageModel = new DefaultListModel();
         
         add(imagePanel);
-        imagePanel.add(panelLabel);
-        imagePanel.add(Box.createRigidArea(new Dimension(0, 20)));
         imagePanel.add(title);
-        imagePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        imagePanel.add(Box.createRigidArea(new Dimension(0, 10)));
         imagePanel.add(imageView);
-        imagePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        buttonsPanel.add(buttonPrev);
-        buttonsPanel.add(buttonNext);
-        imagePanel.add(buttonsPanel);
+        imagePanel.add(Box.createRigidArea(new Dimension(0, 10)));
         
     }
     
@@ -177,17 +177,11 @@ public class StreamView extends JFrame{
     public void playListener(ActionListener listener) {
             buttonPlay.addActionListener(listener);                                                     
     }
-    
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                StreamView streamView = new StreamView();
-                streamView.setLocationRelativeTo(null);
-                streamView.setVisible(true);
-                streamView.setDefaultCloseOperation(MainView.EXIT_ON_CLOSE);
-                         
-            }
-        });
+    public void setImage(){
+        
     }
+    public void setTitle(String title){
+        this.title.setText(title);
+    }
+
 }

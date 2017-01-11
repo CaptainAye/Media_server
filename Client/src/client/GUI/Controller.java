@@ -17,6 +17,10 @@ import javax.swing.JPanel;
 
 import client.Client;
 import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Path;
@@ -27,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.ListCellRenderer;
@@ -37,6 +42,7 @@ import org.mediaserver.lists.ClientSideServerList;
 import org.mediaserver.communication.FileSearcher;
 import org.mediaserver.communication.SignalReceiver;
 import org.mediaserver.exceptions.ServerNotFoundException;
+import org.mediaserver.files.FileType;
 import org.mediaserver.signals.AccessRequestSignal;
 import org.mediaserver.signals.GetFilesRequestSignal;
 import org.mediaserver.signals.StreamRequestFromClientSignal;
@@ -60,6 +66,7 @@ public class Controller {
     private String ipFromCombobox;
     private int portFromCombobox;
     private transient Socket socket;
+    private BufferedImage image;
     
     public Controller(MainView mainView, Component panel1, Component panel2, Component panel3){
         this.mainView = mainView;
@@ -72,6 +79,7 @@ public class Controller {
         @Override
         public void actionPerformed(ActionEvent evt) {
             serverlist = (JComboBox) mainPanel.getJComboBox();
+            //sprawdzanie czy klient już subskrybował serwer
             try{
                 ipFromCombobox = getIpFromComboBox();
                 portFromCombobox = getPortFromComboBox();
@@ -81,6 +89,7 @@ public class Controller {
             } catch (IOException e){
                 e.printStackTrace();
             }
+            
             mainView.getContentPane().remove(panel1);
             mainView.getContentPane().add(panel2);
             mainView.getContentPane().revalidate();
@@ -104,9 +113,7 @@ public class Controller {
                 // Toggle selected state
                 item.setSelected(!item.isSelected());
                 selectedFilesMap.put(sharePanel.getMapKey(index), sharePanel.getMapValue(index));
-                
-               
-              
+
                 // Repaint cell
                 list.repaint(list.getCellBounds(index, index));
                 
@@ -124,95 +131,63 @@ public class Controller {
                 mainView.getContentPane().revalidate();
                 mainView.getContentPane().repaint();
                 
-                 //Dodanie servera do subkrybowanych //TIBO
+                //Dodanie servera do subkrybowanych //TIBO
                 try {
                     addServerToList(selectedFilesMap);
                 } catch (ServerNotFoundException e) {
                     e.printStackTrace();
                 }
                 
-                 try{
+                try{
                     //Wybrane pliki są wysyłane na server          
-                    System.out.println(ipFromCombobox);
-                    System.out.println(portFromCombobox);
-                    System.out.println(socket.toString());
+                    //System.out.println(ipFromCombobox);
+                    //System.out.println(portFromCombobox);
+                    //System.out.println(socket.toString());
                     
                     SignalReceiver.getSignalReceiver().connectSocket(socket);
                     DedicatedSender.getSender().send(socket, new GetFilesResponseSignal(Client.getId(),selectedFilesMap));
 
                     
-                } catch (IOException e){
+                } catch (Exception e){
                     e.printStackTrace();
                  }
                 
-                //Client.addSharedFiles(selectedFilesMap);
-                
-                //NATALIA 
-                /*Set entries = selectedFilesMap.entrySet();
-                Iterator entriesIterator = entries.iterator();
-                ArrayList<String> values = new ArrayList<String>(selectedFilesMap.size());
-                audioMap = new ArrayList<Path>();
-                videoMap = new ArrayList<Path>();
-                imageMap = new ArrayList<Path>();             
-                int i = 0;
-                while(entriesIterator.hasNext()){
-                    Map.Entry mapping = (Map.Entry) entriesIterator.next();
-                    values.add(i,mapping.getValue().toString());
-                    
-                    String temp = values.get(i);
-                    String[] parts = temp.split("\\.(?=[^\\.]+$)");
-                    
-                    //TODO use FileType
-                    switch(parts[1])
-                    {
-                        case "mp3": filesPanel.getAudioModel().addElement(temp);
-                                    audioMap.add((Path) mapping.getKey());
-                                    break;
-                        case "avi": filesPanel.getVideoModel().addElement(temp);
-                                    videoMap.add((Path) mapping.getKey());
-                                    break;
-                        case "mp4": filesPanel.getVideoModel().addElement(temp);
-                                    videoMap.add((Path) mapping.getKey());
-                                    break;
-                        case "jpg": filesPanel.getImageModel().addElement(temp);
-                                    imageMap.add((Path) mapping.getKey());
-                                    break;
+                //if(Client.getSharedFilesFromServer().isEmpty()){
+                    Set entries = selectedFilesMap.entrySet();
+                    Iterator entriesIterator = entries.iterator();
+                    ArrayList<String> values = new ArrayList<String>(selectedFilesMap.size());
+                    //ArrayList<String> values = new ArrayList<String>(Client.getSharedFilesFromServer().size());
+                    audioMap = new ArrayList<Path>();
+                    videoMap = new ArrayList<Path>();
+                    imageMap = new ArrayList<Path>();             
+                    int i = 0;
+                    while(entriesIterator.hasNext()){
+                        //System.out.println("Downloading file from server");
+                        Map.Entry mapping = (Map.Entry) entriesIterator.next();
+                        Path pt = (Path) mapping.getKey();
+                        String name = pt.getFileName().toString();
+                        values.add(i,name);
+
+                        String temp = values.get(i);
+                        switch(FileType.getFileType(pt))
+                        {
+                            case AUDIO: filesPanel.getAudioModel().addElement(temp);
+                                        audioMap.add((Path) mapping.getKey());
+                                        break;
+                            case VIDEO: filesPanel.getVideoModel().addElement(temp);
+                                        videoMap.add((Path) mapping.getKey());
+                                        break;
+                            case IMAGE: filesPanel.getImageModel().addElement(temp);
+                                        imageMap.add((Path) mapping.getKey());
+                                        break;
+                        }
+                        
                     }
-                }*/
-                
-                
-                //Tibo pobieranie plików z servera/klienta
-                    if(!Client.getSharedFilesFromServer().isEmpty()){
-                        Set entries = Client.getSharedFilesFromServer().entrySet();
-                        Iterator entriesIterator = entries.iterator();
-                        ArrayList<String> values = new ArrayList<String>(Client.getSharedFilesFromServer().size());
-                        int i = 0;
-                            while(entriesIterator.hasNext()){
-                                System.out.println("Downloading file from server");
-                                Map.Entry mapping = (Map.Entry) entriesIterator.next();
-                                Path pt = (Path) mapping.getKey();
-                                String name = pt.getFileName().toString();                              
-                                values.add(i,name);
-                    
-                                String temp = values.get(i);
-                                String[] parts = temp.split("\\.(?=[^\\.]+$)");
-                    
-                                    switch(parts[1])
-                                    {
-                                        case "mp3": filesPanel.getAudioModel().addElement(temp);
-                                            break;
-                                        case "avi": filesPanel.getVideoModel().addElement(temp);
-                                            break;
-                                        case "jpg": filesPanel.getImageModel().addElement(temp);
-                                            break;
-                                    }
-                            }
-                    }
+                //}
             }
         }
         );
-        
-        
+   
         filesPanel.getAudioList().addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent event) {
                 if (event.getClickCount() == 2) {
@@ -221,10 +196,17 @@ public class Controller {
                     //odebranie StreamAvailableSignal
                     //wysłanie StreamListenSignal
                     try{
-                        //Socket socket = new Socket(ipFromCombobox,portFromCombobox);
+                        Socket socket = new Socket(ipFromCombobox,portFromCombobox);
                         SignalReceiver.getSignalReceiver().connectSocket(socket);
                         DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
+                        int index = filesPanel.getAudioList().locationToIndex(event.getPoint());
+                        ContentSender.send(ipFromCombobox, portFromCombobox, audioMap.get(index));
                         
+                        //otwarcie streamView
+                        StreamView streamView = new StreamView();
+                        streamView.initAudioComponents();
+                        streamView.setLocationRelativeTo(null);
+                        streamView.setVisible(true);
                     }
                     catch (IOException e){
                         e.printStackTrace();
@@ -240,10 +222,12 @@ public class Controller {
                     //odebranie StreamAvailableSignal
                     //wysłanie StreamListenSignal
                     try{
-                        Socket socket = new Socket(getIpFromComboBox(),getPortFromComboBox());
+                        Socket socket = new Socket(ipFromCombobox,portFromCombobox);
                         SignalReceiver.getSignalReceiver().connectSocket(socket);
                         DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
-                        //ContentSender.send(getIpFromComboBox(), socket.getPort(), videoMap.get(0));
+                        int index = filesPanel.getVideoList().locationToIndex(event.getPoint());
+                        ContentSender.send(ipFromCombobox, portFromCombobox, videoMap.get(index));
+                        
                     }
                     catch (IOException e){
                         e.printStackTrace();
@@ -259,9 +243,29 @@ public class Controller {
                     //odebranie StreamAvailableSignal
                     //wysłanie StreamListenSignal
                     try{
-                        Socket socket = new Socket(getIpFromComboBox(),getPortFromComboBox());
+                        Socket socket = new Socket(ipFromCombobox,portFromCombobox);
                         SignalReceiver.getSignalReceiver().connectSocket(socket);
                         DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
+                        int index = filesPanel.getImageList().locationToIndex(event.getPoint());
+                        ContentSender.send(ipFromCombobox, portFromCombobox, imageMap.get(index));
+                        
+                        image = ImageIO.read(new File(imageMap.get(index).toString()));
+                        
+                        if(image.getWidth()>800 || image.getHeight()>600){
+                            System.out.println("SCALED");
+                            BufferedImage bufferedImage = resize(image,800,600);
+                            StreamView streamView = new StreamView(bufferedImage.getWidth(),bufferedImage.getHeight());
+                            streamView.initImageComponents(bufferedImage,imageMap.get(index).getFileName().toString());
+                            streamView.setLocationRelativeTo(null);
+                            streamView.setVisible(true);
+                        }
+                        else{
+                            System.out.println("NOT SCALED");
+                            StreamView streamView = new StreamView(image.getWidth(),image.getHeight());
+                            streamView.initImageComponents(image,imageMap.get(index).getFileName().toString());
+                            streamView.setLocationRelativeTo(null);
+                            streamView.setVisible(true);
+                        }
 
                     }
                     catch (IOException e){
@@ -271,6 +275,16 @@ public class Controller {
             } 
         });
     }
+    
+    public static BufferedImage resize(BufferedImage img, int newWidth, int newHeight){ 
+        Image tmp = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        BufferedImage dimg = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = dimg.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+
+        return dimg;
+    } 
     public String getIpFromComboBox(){
         //serverlist = (JComboBox) mainPanel.getJComboBox();
         String temp = serverlist.getSelectedItem().toString();
@@ -296,7 +310,6 @@ public class Controller {
         return selectedList;
     }
     public void addServerToList(HashMap<Path,String> wybranepliki) throws ServerNotFoundException{
-        
         //serverlist = mainPanel.getJComboBox();
         //Server id:1 ip: 127.0.0.1
         String temp = serverlist.getSelectedItem().toString();
@@ -333,9 +346,7 @@ public class Controller {
           return label;
        }
     }
-
-    // Handles rendering cells in the list using a check box
-
+    
     static class CheckboxListRenderer extends JCheckBox implements ListCellRenderer<CheckboxListItem> {
 
        @Override

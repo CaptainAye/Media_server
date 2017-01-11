@@ -19,10 +19,12 @@ public enum FileType {
     
     public static FileType getFileType(Path file){
         String fileName = file.getFileName().toString();
-        System.out.println(fileName);
-        String[] extensions = fileName.split("\\.");
+        //System.out.println("Path " + file);
+        //System.out.println("File Name :" + fileName);
+        //String[] extensions = fileName.split("\\.");
+        String[] extensions = fileName.split("\\.(?=[^\\.]+$)");
         String extension = extensions[1];
-        System.out.println(extension);
+        //System.out.println("Extension :" + extension);
         if (videoExtension.contains(extension)){
             return VIDEO;
         }
@@ -32,7 +34,6 @@ public enum FileType {
         else if (imageExtension.contains(extension)){
             return IMAGE;
         }
-        
         return null;
     }
     
