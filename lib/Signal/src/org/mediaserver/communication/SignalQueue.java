@@ -38,7 +38,7 @@ public class SignalQueue{
                 }
             }
             
-            return queue.removeLast();
+             return queue.removeLast();
         }
     }
     

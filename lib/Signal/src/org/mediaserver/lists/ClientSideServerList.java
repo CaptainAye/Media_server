@@ -172,6 +172,7 @@ public  class ClientSideServerList {
         return new Socket(server.getIp(),server.getPort());
     }
     public void setSubscribed( Integer id, HashMap<Path,String> map) throws ServerNotFoundException{
+        System.out.println(id);
         Server server = getServerFromList(id);
         server.setFilesMap(map);
         server.subscribe();

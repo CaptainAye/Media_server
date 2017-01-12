@@ -37,6 +37,7 @@ import org.mediaserver.lists.ClientSideServerList;
 import org.mediaserver.communication.FileSearcher;
 import org.mediaserver.communication.SignalReceiver;
 import org.mediaserver.exceptions.ServerNotFoundException;
+import org.mediaserver.signals.AccessGrantedSignal;
 import org.mediaserver.signals.AccessRequestSignal;
 import org.mediaserver.signals.GetFilesRequestSignal;
 import org.mediaserver.signals.StreamRequestFromClientSignal;
@@ -137,8 +138,11 @@ public class Controller {
                     System.out.println(portFromCombobox);
                     System.out.println(socket.toString());
                     
-                    SignalReceiver.getSignalReceiver().connectSocket(socket);
-                    DedicatedSender.getSender().send(socket, new GetFilesResponseSignal(Client.getId(),selectedFilesMap));
+                    Socket socket3 = new Socket(ipFromCombobox, portFromCombobox );
+                    SignalReceiver.getSignalReceiver().connectSocket(socket3);
+                    DedicatedSender.getSender().send(socket3, new GetFilesResponseSignal(Client.getId(),selectedFilesMap));
+
+                    
 
                     
                 } catch (IOException e){
@@ -182,32 +186,40 @@ public class Controller {
                 
                 
                 //Tibo pobieranie plików z servera/klienta
-                    if(!Client.getSharedFilesFromServer().isEmpty()){
+                    //if(!Client.getSharedFilesFromServer().isEmpty()){
+                    try {
+                        Socket socket2 = new Socket(ipFromCombobox, portFromCombobox );
+                        SignalReceiver.getSignalReceiver().connectSocket(socket2);
+                        DedicatedSender.getSender().send(socket2, new AccessRequestSignal(Client.getId()));
+                        
                         Set entries = Client.getSharedFilesFromServer().entrySet();
                         Iterator entriesIterator = entries.iterator();
                         ArrayList<String> values = new ArrayList<String>(Client.getSharedFilesFromServer().size());
                         int i = 0;
-                            while(entriesIterator.hasNext()){
-                                System.out.println("Downloading file from server");
-                                Map.Entry mapping = (Map.Entry) entriesIterator.next();
-                                Path pt = (Path) mapping.getKey();
-                                String name = pt.getFileName().toString();                              
-                                values.add(i,name);
-                    
-                                String temp = values.get(i);
-                                String[] parts = temp.split("\\.(?=[^\\.]+$)");
-                    
-                                    switch(parts[1])
-                                    {
-                                        case "mp3": filesPanel.getAudioModel().addElement(temp);
-                                            break;
-                                        case "avi": filesPanel.getVideoModel().addElement(temp);
-                                            break;
-                                        case "jpg": filesPanel.getImageModel().addElement(temp);
-                                            break;
-                                    }
+                        while(entriesIterator.hasNext()){
+                            System.out.println("Downloading file from server");
+                            Map.Entry mapping = (Map.Entry) entriesIterator.next();
+                            Path pt = (Path) mapping.getKey();
+                            String name = pt.getFileName().toString();
+                            values.add(i,name);
+                            
+                            String temp = values.get(i);
+                            String[] parts = temp.split("\\.(?=[^\\.]+$)");
+                            
+                            switch(parts[1])
+                            {
+                                case "mp3": filesPanel.getAudioModel().addElement(temp);
+                                break;
+                                case "avi": filesPanel.getVideoModel().addElement(temp);
+                                break;
+                                case "jpg": filesPanel.getImageModel().addElement(temp);
+                                break;
                             }
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    //}
             }
         }
         );
@@ -296,12 +308,14 @@ public class Controller {
         return selectedList;
     }
     public void addServerToList(HashMap<Path,String> wybranepliki) throws ServerNotFoundException{
-        
+        System.out.println("BEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEKAAAAAAAAAAAAAAAAAA");
         //serverlist = mainPanel.getJComboBox();
         //Server id:1 ip: 127.0.0.1
         String temp = serverlist.getSelectedItem().toString();
         String[] parts = temp.split(" ip: ");
-        
+        if(wybranepliki.isEmpty()){
+            System.out.println("hehe");
+        }
         String ip = parts[1];
         String str_id = parts[0].substring(parts[0].lastIndexOf(":")+1);
         int id = Integer.parseInt(str_id);

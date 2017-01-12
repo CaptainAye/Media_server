@@ -18,6 +18,7 @@ public class GetFilesResponseSignal extends Signalizable{
     private transient HashMap<Path,String> map;
     public GetFilesResponseSignal (Integer id, HashMap<Path,String> map)
     {
+        //System.out.println("::::::::::::::::::::::::::::::::::::AAA:::::::::::::::::::::::::::::::::::::::::::::::::");
         setId(id);
         this.map = map;
     }
@@ -30,3 +31,4 @@ public class GetFilesResponseSignal extends Signalizable{
         return map;
     }
 }
+
