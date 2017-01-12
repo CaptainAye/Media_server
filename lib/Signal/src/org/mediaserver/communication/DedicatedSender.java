@@ -16,7 +16,7 @@ import org.mediaserver.interfaces.Signalizable;
  *
  * @author Tomek
  */
-public class DedicatedSender implements java.io.Serializable{
+public class DedicatedSender{
     
     //public ObjectOutputStream outputStream;
   
@@ -34,9 +34,6 @@ public class DedicatedSender implements java.io.Serializable{
         if (socket == null || signal == null){
              return;
         }    
-        System.out.println("****************************************************");
-        System.out.println(signal.toString());
-        
         ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
         outputStream.writeObject(signal);
         
