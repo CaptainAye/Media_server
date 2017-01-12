@@ -47,11 +47,7 @@ import org.mediaserver.signals.AccessRequestSignal;
 import org.mediaserver.signals.GetFilesRequestSignal;
 import org.mediaserver.signals.StreamRequestFromClientSignal;
 import org.mediaserver.signals.GetFilesResponseSignal;
-/**
- *
- * @author Natalia
- */
- 
+
 public class Controller {
     
     private final MainView mainView;
