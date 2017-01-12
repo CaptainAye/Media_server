@@ -59,13 +59,13 @@ public class Controller {
     private SharePanel sharePanel;
     private FilesPanel filesPanel;
     private JComboBox serverlist;
-    private transient HashMap<Path,String> selectedFilesMap;
+    private HashMap<Path,String> selectedFilesMap;
     private ArrayList<Path> audioMap;
     private ArrayList<Path> videoMap;
     private ArrayList<Path> imageMap;
     private String ipFromCombobox;
     private int portFromCombobox;
-    private transient Socket socket;
+    private Socket socket;
     private BufferedImage image;
     
     public Controller(MainView mainView, Component panel1, Component panel2, Component panel3){
