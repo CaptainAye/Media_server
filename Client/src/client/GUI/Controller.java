@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,10 +32,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javax.imageio.ImageIO;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JSlider;
 import javax.swing.ListCellRenderer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.mediaserver.communication.ContentSender;
 import org.mediaserver.communication.DedicatedReceiver;
 import org.mediaserver.communication.DedicatedSender;
@@ -58,9 +66,16 @@ public class Controller {
     private final MainPanel mainPanel;
     private SharePanel sharePanel;
     private FilesPanel filesPanel;
+    private StreamView streamView;
     private JComboBox serverlist;
     private transient HashMap<Path,String> selectedFilesMap;
     private ArrayList<Path> audioMap;
+    private ArrayList<String> audioMapURI;
+    private ArrayList<Media> audioMediaFiles;
+    private ArrayList<MediaPlayer> audioMediaPlayers;
+    private boolean isPlaying;
+    private int filesPanelIndex;
+    private int streamViewAudioIndex;
     private ArrayList<Path> videoMap;
     private ArrayList<Path> imageMap;
     private String ipFromCombobox;
@@ -77,51 +92,53 @@ public class Controller {
         
         mainPanel.subscribeListener(new ActionListener() {
         @Override
-        public void actionPerformed(ActionEvent evt) {
-            serverlist = (JComboBox) mainPanel.getJComboBox();
-            //sprawdzanie czy klient już subskrybował serwer
-            try{
-                ipFromCombobox = getIpFromComboBox();
-                portFromCombobox = getPortFromComboBox();
-                socket = new Socket(ipFromCombobox, portFromCombobox );
-                SignalReceiver.getSignalReceiver().connectSocket(socket);
-                DedicatedSender.getSender().send(socket, new AccessRequestSignal(Client.getId()));
-            } catch (IOException e){
-                e.printStackTrace();
+            public void actionPerformed(ActionEvent evt) {
+                serverlist = (JComboBox) mainPanel.getJComboBox();
+                //sprawdzanie czy klient już subskrybował serwer
+                try{
+                    ipFromCombobox = getIpFromComboBox();
+                    portFromCombobox = getPortFromComboBox();
+                    socket = new Socket(ipFromCombobox, portFromCombobox );
+                    SignalReceiver.getSignalReceiver().connectSocket(socket);
+                    DedicatedSender.getSender().send(socket, new AccessRequestSignal(Client.getId()));
+                } catch (IOException e){
+                    e.printStackTrace();
+                }
+
+                mainView.getContentPane().remove(panel1);
+                mainView.getContentPane().add(panel2);
+                mainView.getContentPane().revalidate();
+                mainView.getContentPane().repaint();
+
+                Thread updateListThread = new Thread(new SharePanel.UpdateFilesList());
+                updateListThread.start();
+
+                selectedFilesMap = new HashMap<Path,String>();
+
+
+                //przebudować
+                sharePanel.list.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent event) {
+                        JList<CheckboxListItem> list =
+                       (JList<CheckboxListItem>) event.getSource();
+
+                    // Get index of item clicked
+                    int index = list.locationToIndex(event.getPoint());
+                    CheckboxListItem item = (CheckboxListItem) list.getModel().getElementAt(index);
+
+                    // Toggle selected state
+                    item.setSelected(!item.isSelected());
+                    selectedFilesMap.put(sharePanel.getMapKey(index), sharePanel.getMapValue(index));
+
+                    // Repaint cell
+                    list.repaint(list.getCellBounds(index, index));
+
+                    }
+                });         
             }
-            
-            mainView.getContentPane().remove(panel1);
-            mainView.getContentPane().add(panel2);
-            mainView.getContentPane().revalidate();
-            mainView.getContentPane().repaint();
-            
-            Thread updateListThread = new Thread(new SharePanel.UpdateFilesList());
-            updateListThread.start();
-            
-            selectedFilesMap = new HashMap<Path,String>();
-            
-            sharePanel.list.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent event) {
-                    JList<CheckboxListItem> list =
-                   (JList<CheckboxListItem>) event.getSource();
-
-                // Get index of item clicked
-                int index = list.locationToIndex(event.getPoint());
-                CheckboxListItem item = (CheckboxListItem) list.getModel().getElementAt(index);
-
-                // Toggle selected state
-                item.setSelected(!item.isSelected());
-                selectedFilesMap.put(sharePanel.getMapKey(index), sharePanel.getMapValue(index));
-
-                // Repaint cell
-                list.repaint(list.getCellBounds(index, index));
-                
-           }
-           });         
         }
-      }
-    );
+        );
 
         sharePanel.sendListener(new ActionListener(){
             public void actionPerformed(ActionEvent evt) {
@@ -158,8 +175,11 @@ public class Controller {
                     ArrayList<String> values = new ArrayList<String>(selectedFilesMap.size());
                     //ArrayList<String> values = new ArrayList<String>(Client.getSharedFilesFromServer().size());
                     audioMap = new ArrayList<Path>();
+                    audioMapURI = new ArrayList<String>();
                     videoMap = new ArrayList<Path>();
-                    imageMap = new ArrayList<Path>();             
+                    imageMap = new ArrayList<Path>();
+                    audioMediaFiles = new ArrayList<Media>();
+                    audioMediaPlayers = new ArrayList<MediaPlayer>();
                     int i = 0;
                     while(entriesIterator.hasNext()){
                         //System.out.println("Downloading file from server");
@@ -184,29 +204,119 @@ public class Controller {
                         
                     }
                 //}
+                //zmiana na URI audioMap
+                //zrobienie Media i MediaPlayer dla każdefo pliku muzycznego
+                new JFXPanel();
+                for(int a=0;a<audioMap.size();a++){
+                    String musicFilePath = audioMap.get(a).toString();
+                    musicFilePath = musicFilePath.replace("\\", "/");
+                    File file = new File(musicFilePath);
+                    String fileURI = file.toURI().toString();
+                    audioMapURI.add(fileURI);
+                    audioMediaFiles.add(new Media(audioMapURI.get(a)));
+                    audioMediaPlayers.add(new MediaPlayer(audioMediaFiles.get(a)));
+                }
             }
         }
         );
-   
-        filesPanel.getAudioList().addMouseListener(new MouseAdapter() {
+        
+        filesPanel.streamMusic(new MouseAdapter(){
             public void mouseClicked(MouseEvent event) {
                 if (event.getClickCount() == 2) {
-                    System.out.println("KLIKNIĘTO AUDIO");
+                    //System.out.println("KLIKNIĘTO AUDIO");
                     //wysłanie StreamRequestSignal
                     //odebranie StreamAvailableSignal
                     //wysłanie StreamListenSignal
+                    filesPanelIndex = filesPanel.getAudioList().locationToIndex(event.getPoint());
                     try{
                         Socket socket = new Socket(ipFromCombobox,portFromCombobox);
                         SignalReceiver.getSignalReceiver().connectSocket(socket);
                         DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
-                        int index = filesPanel.getAudioList().locationToIndex(event.getPoint());
-                        ContentSender.send(ipFromCombobox, portFromCombobox, audioMap.get(index));
+                        ContentSender.send(ipFromCombobox, portFromCombobox, audioMap.get(filesPanelIndex));
                         
-                        //otwarcie streamView
-                        StreamView streamView = new StreamView();
-                        streamView.initAudioComponents();
+                        streamView = new StreamView();
+                        streamView.initAudioComponents(audioMap.get(filesPanelIndex).getFileName().toString(), filesPanel.getAudioModel());
                         streamView.setLocationRelativeTo(null);
                         streamView.setVisible(true);
+;
+                        streamViewAudioIndex=filesPanelIndex;
+                        audioMediaPlayers.get(streamViewAudioIndex).play();
+                        audioMediaPlayers.get(filesPanelIndex).setVolume(0.1);
+                        isPlaying=true;
+                        streamView.getAudioList().setSelectedIndex(streamViewAudioIndex);
+                        
+                        if(!streamView.isVisible())
+                            audioMediaPlayers.get(streamViewAudioIndex).stop();
+                        
+                        //buttons
+                        streamView.playListener(new ActionListener(){
+                            public void actionPerformed(ActionEvent e) {
+                                if(isPlaying){
+                                    streamView.setPlayButtonTitle("ODTWÓRZ");
+                                    audioMediaPlayers.get(streamViewAudioIndex).pause();
+                                    isPlaying=false;
+                                }
+                                else{
+                                    streamView.setPlayButtonTitle("PAUZA");
+                                    audioMediaPlayers.get(streamViewAudioIndex).play();
+                                    isPlaying=true;
+                                }   
+                            }
+                            
+                        } 
+                        );
+                        streamView.prevListener(new ActionListener(){
+                            public void actionPerformed(ActionEvent e) {
+                                if(streamViewAudioIndex>0){
+                                    audioMediaPlayers.get(streamViewAudioIndex).stop();
+                                    streamViewAudioIndex--;
+                                    streamView.getAudioList().setSelectedIndex(streamViewAudioIndex);
+                                    streamView.setAudioTitle(audioMap.get(streamViewAudioIndex).getFileName().toString());
+                                    audioMediaPlayers.get(streamViewAudioIndex).play();
+                                }
+                                else if(streamViewAudioIndex==0);
+                            }
+                            
+                        }
+                        );
+                        streamView.nextListener(new ActionListener(){
+                            public void actionPerformed(ActionEvent e) {
+                                if(streamViewAudioIndex<audioMediaPlayers.size()-1){
+                                    audioMediaPlayers.get(streamViewAudioIndex).stop();
+                                    streamViewAudioIndex++;
+                                    streamView.getAudioList().setSelectedIndex(streamViewAudioIndex);
+                                    streamView.setAudioTitle(audioMap.get(streamViewAudioIndex).getFileName().toString());
+                                    audioMediaPlayers.get(streamViewAudioIndex).play();
+                                }
+                                else if(streamViewAudioIndex==audioMediaPlayers.size()-1);   
+                            }
+                            
+                        }
+                        );
+                        
+                        streamView.audioListListener(new MouseAdapter() {
+                            public void mouseClicked(MouseEvent event) {
+                                if (event.getClickCount() == 2) {
+                                    audioMediaPlayers.get(streamViewAudioIndex).stop();
+                                    streamViewAudioIndex=streamView.getAudioList().locationToIndex(event.getPoint());
+                                    streamView.getAudioList().setSelectedIndex(streamViewAudioIndex);
+                                    streamView.setAudioTitle(audioMap.get(streamViewAudioIndex).getFileName().toString());
+                                    audioMediaPlayers.get(streamViewAudioIndex).play();
+                                }
+                            }            
+                        }
+                        );
+
+                        streamView.changeVolume(new ChangeListener(){
+                            public void stateChanged(ChangeEvent e) {
+                                JSlider src = (JSlider)e.getSource();
+                                int value = src.getValue();
+                                System.out.println("Value " + value);
+                                audioMediaPlayers.get(streamViewAudioIndex).setVolume(value/100);
+                                streamView.getVolume().setValue(value);
+                            } 
+                        }
+                        );
                     }
                     catch (IOException e){
                         e.printStackTrace();
@@ -214,20 +324,19 @@ public class Controller {
                 }
             } 
         });
-        filesPanel.getVideoList().addMouseListener(new MouseAdapter() {
+        
+        filesPanel.streamVideo(new MouseAdapter() {
             public void mouseClicked(MouseEvent event) {
                 if (event.getClickCount() == 2) {
-                    System.out.println("KLIKNIĘTO VIDEO");
-                    //wysłanie StreamRequestSignal
-                    //odebranie StreamAvailableSignal
-                    //wysłanie StreamListenSignal
+                    //System.out.println("KLIKNIĘTO VIDEO");
                     try{
                         Socket socket = new Socket(ipFromCombobox,portFromCombobox);
                         SignalReceiver.getSignalReceiver().connectSocket(socket);
                         DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
                         int index = filesPanel.getVideoList().locationToIndex(event.getPoint());
                         ContentSender.send(ipFromCombobox, portFromCombobox, videoMap.get(index));
-                        
+                        //ContentSender.streamForwardVideo(ipFromCombobox, portFromCombobox, videoMap.get(index));
+                        ///VLC
                     }
                     catch (IOException e){
                         e.printStackTrace();
@@ -235,13 +344,11 @@ public class Controller {
                 }
             } 
         });
-        filesPanel.getImageList().addMouseListener(new MouseAdapter() {
+        
+        filesPanel.streamImage(new MouseAdapter() {
             public void mouseClicked(MouseEvent event) {
                 if (event.getClickCount() == 2) {
-                    System.out.println("KLIKNIĘTO IMAGE");
-                    //wysłanie StreamRequestFromClientSignal
-                    //odebranie StreamAvailableSignal
-                    //wysłanie StreamListenSignal
+                    //System.out.println("KLIKNIĘTO IMAGE");
                     try{
                         Socket socket = new Socket(ipFromCombobox,portFromCombobox);
                         SignalReceiver.getSignalReceiver().connectSocket(socket);
@@ -254,17 +361,19 @@ public class Controller {
                         if(image.getWidth()>800 || image.getHeight()>600){
                             System.out.println("SCALED");
                             BufferedImage bufferedImage = resize(image,800,600);
-                            StreamView streamView = new StreamView(bufferedImage.getWidth(),bufferedImage.getHeight());
+                            streamView = new StreamView(bufferedImage.getWidth(),bufferedImage.getHeight());
                             streamView.initImageComponents(bufferedImage,imageMap.get(index).getFileName().toString());
                             streamView.setLocationRelativeTo(null);
                             streamView.setVisible(true);
+                            streamView.setDefaultCloseOperation(StreamView.DISPOSE_ON_CLOSE);
                         }
                         else{
                             System.out.println("NOT SCALED");
-                            StreamView streamView = new StreamView(image.getWidth(),image.getHeight());
+                            streamView = new StreamView(image.getWidth(),image.getHeight());
                             streamView.initImageComponents(image,imageMap.get(index).getFileName().toString());
                             streamView.setLocationRelativeTo(null);
                             streamView.setVisible(true);
+                            streamView.setDefaultCloseOperation(StreamView.DISPOSE_ON_CLOSE);
                         }
 
                     }

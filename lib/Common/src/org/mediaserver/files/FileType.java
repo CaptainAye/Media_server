@@ -39,6 +39,9 @@ public enum FileType {
     
     public static String getExtensions(){
         return videoExtension + ";" +  audioExtension + ";" + imageExtension;
+        //return videoExtension;
+        //return audioExtension;
+        //return imageExtension;
     }
     
     

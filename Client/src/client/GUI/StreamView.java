@@ -14,12 +14,15 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import javax.swing.event.ChangeListener;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.BoundedRangeModel;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -32,6 +35,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
@@ -44,7 +48,7 @@ public class StreamView extends JFrame{
     private int height = 600;
     private int width = 800;
     
-    private DefaultListModel audioModel;
+    //private DefaultListModel audioModel;
     private DefaultListModel imageModel;
     private DefaultListModel videoModel;
     private JPanel audioPanel;
@@ -56,6 +60,7 @@ public class StreamView extends JFrame{
     private JButton buttonPrev;
     private JList audioList;
     private JProgressBar seekBar;
+    private JSlider volume;
     
     private JLabel panelLabel;
     private JLabel title;
@@ -72,18 +77,16 @@ public class StreamView extends JFrame{
         setSize(width,height);
     }
     
-    void initAudioComponents() {
+    void initAudioComponents(String audioName,DefaultListModel audioModel) {
         audioPanel = new JPanel();
         audioPanel.setMaximumSize(new Dimension(width,height-100));
         audioPanel.setLayout(new BoxLayout(audioPanel, BoxLayout.Y_AXIS));
         
-        panelLabel = new JLabel("MUZYKA");
-        panelLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelLabel.setBackground(Color.lightGray);
-        panelLabel.setBorder(BorderFactory.createLineBorder(Color.gray));
-        panelLabel.setMaximumSize(new Dimension(width,100));
-        panelLabel.setFont(new Font("Times New Roman", Font.PLAIN, 50));
-        panelLabel.setHorizontalAlignment(JLabel.CENTER);
+        title = new JLabel(audioName);
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        title.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+        title.setHorizontalAlignment(JLabel.CENTER);
+        title.setMaximumSize(new Dimension(width,20));
         
         seekBar = new JProgressBar();
         
@@ -92,21 +95,22 @@ public class StreamView extends JFrame{
         buttonsPanel.setLayout(new FlowLayout());
         buttonsPanel.setMaximumSize(new Dimension(width,100));
         
-        buttonPlay = new JButton("ODTWÓRZ");
+        volume = new JSlider(JSlider.HORIZONTAL,0,100,30);
+        volume.setMaximum(100);
+        volume.setMinimum(0);
+        volume.setMajorTickSpacing(10);
+        volume.setMinorTickSpacing(1);
+        volume.setPaintTicks(true);
+        volume.setPaintLabels(true);
+        
+        buttonPlay = new JButton("PAUZA");
         buttonPlay.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         buttonNext = new JButton("NASTĘPNE");
         buttonNext.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         buttonPrev = new JButton("POPRZEDNIE");
         buttonPrev.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         
-        title = new JLabel("TYTYŁ PIOSENKI");
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        //audioTitle.setBorder(BorderFactory.createLineBorder(Color.gray));
-        title.setFont(new Font("Times New Roman", Font.PLAIN, 30));
-        title.setHorizontalAlignment(JLabel.CENTER);
-        title.setMaximumSize(new Dimension(width,50));
-        
-        audioModel = new DefaultListModel();
+        //audioModel = new DefaultListModel();
         audioList = new JList(audioModel);
         audioList.setMaximumSize(new Dimension(400,100));
         audioList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -114,16 +118,15 @@ public class StreamView extends JFrame{
         audioList.setFont(new Font("Times New Roman", Font.PLAIN, 25));
         
         add(audioPanel);
-        audioPanel.add(panelLabel);
-        audioPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         audioPanel.add(title);
-        audioPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        audioPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         audioPanel.add(seekBar);
-        audioPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        audioPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonsPanel.add(buttonPlay);
         buttonsPanel.add(buttonNext);
         buttonsPanel.add(buttonPrev);
         audioPanel.add(buttonsPanel);
+        audioPanel.add(volume);
         audioPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         audioPanel.add(new JScrollPane(audioList));
 
@@ -137,7 +140,6 @@ public class StreamView extends JFrame{
         
         title = new JLabel(imageName);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        //audioTitle.setBorder(BorderFactory.createLineBorder(Color.gray));
         title.setFont(new Font("Times New Roman", Font.PLAIN, 15));
         title.setHorizontalAlignment(JLabel.CENTER);
         title.setMaximumSize(new Dimension(width,20));
@@ -169,19 +171,32 @@ public class StreamView extends JFrame{
     }
     
     public void prevListener(ActionListener listener) {
-            buttonPrev.addActionListener(listener);                                                     
+        buttonPrev.addActionListener(listener);                                                     
     }
     public void nextListener(ActionListener listener) {
-            buttonNext.addActionListener(listener);                                                     
+        buttonNext.addActionListener(listener);                                                     
     }
     public void playListener(ActionListener listener) {
-            buttonPlay.addActionListener(listener);                                                     
+        buttonPlay.addActionListener(listener);                                                     
     }
-    public void setImage(){
-        
+    public void audioListListener(MouseAdapter adapter) {
+        audioList.addMouseListener(adapter);    
     }
-    public void setTitle(String title){
+    public void changeVolume(ChangeListener change){
+        volume.addChangeListener(change);
+    }
+    
+    public JList getAudioList(){
+        return audioList;
+    }
+    public JSlider getVolume(){
+        return volume;
+    }
+    
+    public void setAudioTitle(String title){
         this.title.setText(title);
     }
-
+    public void setPlayButtonTitle(String title){
+        this.buttonPlay.setText(title);
+    }
 }

@@ -119,10 +119,14 @@ public class FilesPanel extends JTabbedPane{
         
     }
     
-    public void streamFile(MouseAdapter adapter) {
-        audioList.addMouseListener(adapter);
-        videoList.addMouseListener(adapter);
-        imageList.addMouseListener(adapter);
+    public void streamMusic(MouseAdapter adapter) {
+        audioList.addMouseListener(adapter);      
+    }
+    public void streamVideo(MouseAdapter adapter) {
+        videoList.addMouseListener(adapter);       
+    }
+    public void streamImage(MouseAdapter adapter) {
+        imageList.addMouseListener(adapter);    
     }
     
     public DefaultListModel getAudioModel(){
@@ -134,6 +138,7 @@ public class FilesPanel extends JTabbedPane{
     public DefaultListModel getImageModel(){
         return imageModel;
     }
+    
     public JList getAudioList(){
         return audioList;
     }
