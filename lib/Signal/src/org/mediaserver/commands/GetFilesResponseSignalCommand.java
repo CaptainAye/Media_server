@@ -31,8 +31,6 @@ public class GetFilesResponseSignalCommand implements Command {
     
     //przesyłanie drzewa z kompa klienta
     public void execute(QueuePacket data,Integer callerId) {
-        
-        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
         signal =(GetFilesResponseSignal) data.getSignal();
         Integer clientId = signal.getId();
         
@@ -40,7 +38,7 @@ public class GetFilesResponseSignalCommand implements Command {
         System.out.println("Access request has been received from client no " + clientId + " from ip: " + data.getSocket().getInetAddress().getHostAddress().toString() );
         if (ClientIsAllowed()){
             if (!clientList.clientExists(clientId)){
-                clientList.addToList(signal.getFilesToIndex(), clientId);
+                clientList.addToList(signal.getFilesToIndex(), clientId, signal.getLocalIp(), signal.getSourcePort());
             }
             
             HashMap<Path,Integer> mapToSend = ServerSideClientList.getClientList().getMap();
@@ -48,6 +46,7 @@ public class GetFilesResponseSignalCommand implements Command {
             DedicatedSender.getSender().send(data.getSocket(), new AccessGrantedSignal(callerId,mapToSend));
             } catch(IOException e){
                 e.printStackTrace();
+                System.exit(-1);
             }
         }
         else { //TODO Client sent no files to index 

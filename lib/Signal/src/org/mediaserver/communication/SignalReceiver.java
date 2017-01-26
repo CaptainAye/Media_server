@@ -51,7 +51,7 @@ public class SignalReceiver{
                 //e.printStackTrace();
                 //TODO handle IOException in run() of ClientThread class in SignalReceiver
             } catch (ClassNotFoundException e){
-                e.printStackTrace();
+                //e.printStackTrace();
                 //TODO handle ClassNotFoundException in run() of ClientThread class in SignalReceiver
             }
             

@@ -109,6 +109,7 @@ public class ContentSender {
                 count = fileStream.read(data);
                 DatagramPacket packetToSend = new DatagramPacket(data,data.length,InetAddress.getByName(remoteIp),remotePort);
                 socket.send(packetToSend);
+                Thread.sleep(100);
             }
         } catch (SocketException e){
             e.printStackTrace();
@@ -116,14 +117,17 @@ public class ContentSender {
             e.printStackTrace();
         } catch (IOException e){
             e.printStackTrace();
-        }finally {
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        finally {
             socket.close();
         }
         
     }
     
     private static void streamImage(String remoteIp, Integer remotePort, Path file){
-        
+        streamAudio(remoteIp,remotePort,file);
         
         
     }

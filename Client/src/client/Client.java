@@ -5,7 +5,9 @@
  */
 package client;
 
+import client.GUI.Controller;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,7 +38,8 @@ public class Client {
     /*public static void main(String[] args)*/
     
     private static Integer clientId;
-    private static HashMap<Path,Integer> sharedFilesFromServer;
+    private static HashMap<String,Integer> sharedFilesFromServer;
+    private static Controller control;
     Path pt;
     
     public Client(){
@@ -49,14 +52,32 @@ public class Client {
         serverReceiverThread.start();
         sharedFilesFromServer = new HashMap<>();
     }
+    public static void setController(Controller controller){
+        control = controller;
+    }
     public static Integer getId(){
         return clientId;
     }
-    public static void addSharedFiles(int myId, HashMap<Path,Integer> newSharedFiles){
-            sharedFilesFromServer.putAll(newSharedFiles);       
+    public static void addSharedFiles(HashMap<Path,Integer> newSharedFiles){
+        HashMap<String, Integer> transformedMap = new HashMap<>();
+        for (Path path : newSharedFiles.keySet()){
+            Integer client = newSharedFiles.get(path);
+            transformedMap.put(path.toString(), client);
+        }
+        System.out.println(transformedMap.size());
+        sharedFilesFromServer.putAll(transformedMap);
+    }
+    
+    public static HashMap<String, Integer> getStringSharedFilesFromServer(){
+        return sharedFilesFromServer;
     }
     public static HashMap<Path,Integer> getSharedFilesFromServer(){
-        return sharedFilesFromServer;
+        HashMap<Path, Integer> transformedMap = new HashMap<>();
+        for (String path : sharedFilesFromServer.keySet()){
+            Integer client = sharedFilesFromServer.get(path);
+            transformedMap.put(Paths.get(path), client);
+        }
+        return transformedMap;
         
     }
     

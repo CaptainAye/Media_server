@@ -16,6 +16,7 @@ import org.mediaserver.signals.AccessGrantedSignal;
 import org.mediaserver.signals.GetFilesRequestSignal;
 import org.mediaserver.signals.GetFilesResponseSignal;
 import client.Client;
+import org.mediaserver.communication.StreamTaskChecker;
 
 /**
  *
@@ -33,11 +34,10 @@ public class AccessGrantedSignalCommand implements Command {
         AccessGrantedSignal accessgranted = (AccessGrantedSignal) data.getSignal();
         
         indexedFilesMap = accessgranted.getIndexedFilesMap();
-        
         //GetFilesResponseSignal getFileResponse = (GetFilesResponseSignal) data.getSignal();
         //getFileResponse.setFilesForIndexing(accessgranted.getIndexedFilesMap());
         //ServerSideClientList.getClientList().getMap();
-        Client.addSharedFiles(clientID, indexedFilesMap);
+        Client.addSharedFiles(indexedFilesMap);
                 
     }
     

@@ -20,6 +20,7 @@ public class SignalQueue{
     private SignalQueue(){
     }
     public void enqueue(QueuePacket data){
+        System.out.println(data.getSignal().toString());
         queue.push(data);
         synchronized(this){
             if (queue.size() == 1){

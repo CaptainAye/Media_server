@@ -30,7 +30,7 @@ public class BroadcastReceiver implements Runnable {
         DatagramSocket socket = new DatagramSocket(port);
         byte[] receiveData = new byte[1024];
         while(true){
-            System.out.println("Listening for packets");
+            //System.out.println("Listening for packets");
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             socket.receive(receivePacket);
             ByteArrayInputStream bais = new ByteArrayInputStream(receiveData);

@@ -36,8 +36,8 @@ public class SignalBroadcaster extends SignalSender implements Runnable {
             while(iter.hasNext()){
                 try {
                     BroadcastSignal sig = iter.next();
-                    System.out.println("Iteration: " + i + " packet sent");
-                    System.out.println("Packet sent on broadcast IP: " + sig.getIp() + " from server ip: " + sig.getLocalIp() + " on port: " + sig.getDestinationPort());
+                    //System.out.println("Iteration: " + i + " packet sent");
+                    //System.out.println("Packet sent on broadcast IP: " + sig.getIp() + " from server ip: " + sig.getLocalIp() + " on port: " + sig.getDestinationPort());
                     i++;
                     send(sig);
                 } catch (WrongSocketPortException e){

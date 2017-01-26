@@ -10,6 +10,7 @@ import org.mediaserver.commands.AccessGrantedSignalCommand;
 import org.mediaserver.commands.AccessRequestSignalCommand;
 import org.mediaserver.commands.GetFilesResponseSignalCommand;
 import org.mediaserver.commands.BroadcastSignalCommand;
+import org.mediaserver.commands.CheckStreamTaskSignalCommand;
 import org.mediaserver.commands.GetFilesRequestSignalCommand;
 import org.mediaserver.commands.StreamRequestFromClientCommand;
 import org.mediaserver.commands.StreamRequestFromServerCommand;
@@ -22,6 +23,7 @@ import org.mediaserver.signals.AccessGrantedSignal;
 import org.mediaserver.signals.AccessRequestSignal;
 import org.mediaserver.signals.GetFilesResponseSignal;
 import org.mediaserver.signals.BroadcastSignal;
+import org.mediaserver.signals.CheckStreamTaskSignal;
 import org.mediaserver.signals.GetFilesRequestSignal;
 import org.mediaserver.signals.StreamRequestFromClientSignal;
 import org.mediaserver.signals.StreamRequestFromServerSignal;
@@ -77,6 +79,7 @@ public class SignalParser implements Runnable{
             register(StreamRequestFromServerSignal.class, new StreamRequestFromServerCommand());
             register(StreamResponseFromClientSignal.class, new StreamResponseFromClientCommand());
             register(StreamResponseFromServerSignal.class, new StreamResponseFromServerCommand());
+            register(CheckStreamTaskSignal.class, new CheckStreamTaskSignalCommand());
             //REGISTER YOUR SIGNALS
             
         } catch (NotASignalizableTypeException e){

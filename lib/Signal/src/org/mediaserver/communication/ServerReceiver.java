@@ -40,7 +40,7 @@ public class ServerReceiver implements Runnable {
         while(true){
             try{
                 // Opens dedicated communication through TCP
-                System.out.println("Opening server listening channel");
+                //System.out.println("Opening server listening channel");
                 Socket clientSocket = socket.accept();
                 SignalReceiver.getSignalReceiver().connectSocket(clientSocket);
             } catch (IOException e){

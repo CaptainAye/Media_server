@@ -29,14 +29,26 @@ public class ServerSideClientList implements Serializable {
     private static class Client{
         HashMap<Path,String> filesMap;
         final Integer id;
+        final String ip;
+        final Integer port;
         
-        Client (HashMap<Path,String> filesMap,Integer id){
+        Client (HashMap<Path,String> filesMap,Integer id, String ip, Integer port){
             this.filesMap = filesMap;
             this.id = id;
+            this.ip = ip;
+            this.port = port;
         }
         
         public Integer getId(){
             return id;
+        }
+        
+        public Integer getPort(){
+            return port;
+        }
+        
+        public String getIp(){
+            return ip;
         }
     }
     
@@ -84,11 +96,31 @@ public class ServerSideClientList implements Serializable {
         return false;
     }
     
-    public void addToList(HashMap<Path,String> filesMap, Integer id){
+    public void addToList(HashMap<Path,String> filesMap, Integer id, String ip, Integer port){
         if (!clientExists(id)){
-            list.add(new Client(filesMap, id));
-            saveClientList();
+            list.add(new Client(filesMap, id, ip, port));
+            //saveClientList();
         }
+    }
+    
+    public Integer getClientPort(Integer id){
+        for(Client client: list){
+            if (client.id == id){
+                return client.getPort();
+            }
+           
+        }
+        return null;
+    }
+    
+    public String getClientIp(Integer id){
+        for(Client client: list){
+            if (client.id == id){
+                return client.getIp();
+            }
+            
+        }
+        return null;
     }
     
     public void removeFromList(Integer id){

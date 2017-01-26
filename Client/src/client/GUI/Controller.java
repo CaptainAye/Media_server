@@ -43,12 +43,14 @@ import javax.swing.JSlider;
 import javax.swing.ListCellRenderer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.mediaserver.communication.ContentReceiver;
 import org.mediaserver.communication.ContentSender;
 import org.mediaserver.communication.DedicatedReceiver;
 import org.mediaserver.communication.DedicatedSender;
 import org.mediaserver.lists.ClientSideServerList;
 import org.mediaserver.communication.FileSearcher;
 import org.mediaserver.communication.SignalReceiver;
+import org.mediaserver.communication.StreamTaskChecker;
 import org.mediaserver.exceptions.ServerNotFoundException;
 import org.mediaserver.files.FileType;
 import org.mediaserver.signals.AccessRequestSignal;
@@ -68,7 +70,7 @@ public class Controller {
     private FilesPanel filesPanel;
     private StreamView streamView;
     private JComboBox serverlist;
-    private transient HashMap<Path,String> selectedFilesMap;
+    private HashMap<Path,String> selectedFilesMap;
     private ArrayList<Path> audioMap;
     private ArrayList<String> audioMapURI;
     private ArrayList<Media> audioMediaFiles;
@@ -80,7 +82,7 @@ public class Controller {
     private ArrayList<Path> imageMap;
     private String ipFromCombobox;
     private int portFromCombobox;
-    private transient Socket socket;
+    private Socket socket;
     private BufferedImage image;
     
     public Controller(MainView mainView, Component panel1, Component panel2, Component panel3){
@@ -143,6 +145,7 @@ public class Controller {
         sharePanel.sendListener(new ActionListener(){
             public void actionPerformed(ActionEvent evt) {
                 //wysłanie plików na serwer
+                System.out.println("Enter action performed");
                 mainView.getContentPane().remove(panel2);
                 mainView.getContentPane().add(panel3);
                 mainView.getContentPane().revalidate();
@@ -160,9 +163,13 @@ public class Controller {
                     //System.out.println(ipFromCombobox);
                     //System.out.println(portFromCombobox);
                     //System.out.println(socket.toString());
-                    
+                    Socket socket = new Socket(ipFromCombobox, portFromCombobox );
                     SignalReceiver.getSignalReceiver().connectSocket(socket);
                     DedicatedSender.getSender().send(socket, new GetFilesResponseSignal(Client.getId(),selectedFilesMap));
+                    Thread streamChecker = new Thread(new StreamTaskChecker(ipFromCombobox, portFromCombobox));
+                    streamChecker.start();
+                    //SignalReceiver.getSignalReceiver().connectSocket(socket);
+                    //DedicatedSender.getSender().send(socket, new GetFilesResponseSignal(Client.getId(),selectedFilesMap));
 
                     
                 } catch (Exception e){
@@ -231,11 +238,18 @@ public class Controller {
                     try{
                         Socket socket = new Socket(ipFromCombobox,portFromCombobox);
                         SignalReceiver.getSignalReceiver().connectSocket(socket);
-                        DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
-                        ContentSender.send(ipFromCombobox, portFromCombobox, audioMap.get(filesPanelIndex));
-                        
+                        Integer contentReceiverPort = 50001; //TODO bardziej wyszukana metoda wyboru portu.
+                        //Ustaw polaczenie do odebrania wysylanego strumienia (jakies Audio.getContent czy cos w ten desen)
+                        Integer hostClientId = Client.getStringSharedFilesFromServer().get(audioMap.get(filesPanelIndex).toString());
+                        Thread receiver = new Thread(new ContentReceiver(hostClientId, contentReceiverPort, audioMap.get(filesPanelIndex).toFile().getName()));
+                        receiver.start();
+                        DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId(),hostClientId, contentReceiverPort,audioMap.get(filesPanelIndex)));
+                        //String receivedFilePath = ContentReceiver.receiveContent(hostClientId, contentReceiverPort, audioMap.get(filesPanelIndex).toFile().getName());
+                        String receivedFilePath;
+                        //ContentSender.send(ipFromCombobox, portFromCombobox, audioMap.get(filesPanelIndex));
+                        receivedFilePath = audioMap.get(filesPanelIndex).getFileName().toString(); // TODO remove when file received from server
                         streamView = new StreamView();
-                        streamView.initAudioComponents(audioMap.get(filesPanelIndex).getFileName().toString(), filesPanel.getAudioModel());
+                        streamView.initAudioComponents(receivedFilePath, filesPanel.getAudioModel());
                         streamView.setLocationRelativeTo(null);
                         streamView.setVisible(true);
 ;
@@ -332,10 +346,18 @@ public class Controller {
                     try{
                         Socket socket = new Socket(ipFromCombobox,portFromCombobox);
                         SignalReceiver.getSignalReceiver().connectSocket(socket);
-                        DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
+                        Integer contentReceiverPort = 50002;
+                        
                         int index = filesPanel.getVideoList().locationToIndex(event.getPoint());
+                        Integer hostClientId = Client.getStringSharedFilesFromServer().get(videoMap.get(index).toString());
+                        
+                        Thread receiver = new Thread(new ContentReceiver(hostClientId, contentReceiverPort, videoMap.get(index).toFile().getName()));
+                        receiver.start();
+                        DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId(),hostClientId,contentReceiverPort,videoMap.get(index)));
+                        String receivedFilePath;// = ContentReceiver.receiveContent(hostClientId, contentReceiverPort, videoMap.get(index).toFile().getName());
+                        
                         ContentSender.send(ipFromCombobox, portFromCombobox, videoMap.get(index));
-                        //ContentSender.streamForwardVideo(ipFromCombobox, portFromCombobox, videoMap.get(index));
+                        ContentSender.streamForwardVideo(ipFromCombobox, portFromCombobox, videoMap.get(index));
                         ///VLC
                     }
                     catch (IOException e){
@@ -352,17 +374,26 @@ public class Controller {
                     try{
                         Socket socket = new Socket(ipFromCombobox,portFromCombobox);
                         SignalReceiver.getSignalReceiver().connectSocket(socket);
-                        DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId()));
                         int index = filesPanel.getImageList().locationToIndex(event.getPoint());
+                        System.out.println("client id : " + Client.getId());
+                        Integer contentReceiverPort = 50003;
+                        Integer hostClientId =Client.getStringSharedFilesFromServer().get(imageMap.get(index).toString());
+                        
+                        Thread receiver = new Thread(new ContentReceiver(hostClientId, contentReceiverPort, imageMap.get(index).toFile().getName()));
+                        receiver.start();
+                        DedicatedSender.getSender().send(socket, new StreamRequestFromClientSignal(Client.getId(),hostClientId,contentReceiverPort,imageMap.get(index)));
+                        String receivedFilePath;// = ContentReceiver.receiveContent(hostClientId, contentReceiverPort, imageMap.get(index).toFile().getName());
+                        
                         ContentSender.send(ipFromCombobox, portFromCombobox, imageMap.get(index));
                         
-                        image = ImageIO.read(new File(imageMap.get(index).toString()));
+                        receivedFilePath = imageMap.get(index).toString(); // TODO remove when file will be properly received from server
+                        image = ImageIO.read(new File(receivedFilePath));
                         
                         if(image.getWidth()>800 || image.getHeight()>600){
                             System.out.println("SCALED");
                             BufferedImage bufferedImage = resize(image,800,600);
                             streamView = new StreamView(bufferedImage.getWidth(),bufferedImage.getHeight());
-                            streamView.initImageComponents(bufferedImage,imageMap.get(index).getFileName().toString());
+                            streamView.initImageComponents(bufferedImage,receivedFilePath);
                             streamView.setLocationRelativeTo(null);
                             streamView.setVisible(true);
                             streamView.setDefaultCloseOperation(StreamView.DISPOSE_ON_CLOSE);

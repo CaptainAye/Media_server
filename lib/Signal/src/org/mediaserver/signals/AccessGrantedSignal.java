@@ -5,6 +5,7 @@
  */
 package org.mediaserver.signals;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import org.mediaserver.interfaces.Signalizable;
 /**
@@ -13,14 +14,24 @@ import org.mediaserver.interfaces.Signalizable;
  */
 public class AccessGrantedSignal extends Signalizable{
     
-    private HashMap<Path,Integer> indexedFilesMap;
+    private HashMap<String,Integer> indexedFilesMap;
     
     public AccessGrantedSignal(Integer id, HashMap<Path,Integer> map){
+        HashMap<String,Integer> serializableMap = new HashMap<>();
         setId(id);
-        indexedFilesMap = map;
+        for(Path path : map.keySet()){
+            Integer client = map.get(path);
+            serializableMap.put(path.toString(), client);
+        }
+        indexedFilesMap = serializableMap;
     }
     //tibo
     public HashMap<Path,Integer> getIndexedFilesMap(){
-        return indexedFilesMap;
+        HashMap<Path,Integer> indexedPathMap = new HashMap<>();
+        for (String path : indexedFilesMap.keySet()){
+            Integer client = indexedFilesMap.get(path);
+            indexedPathMap.put(Paths.get(path), client);
+        }
+        return indexedPathMap;
     }
 }
